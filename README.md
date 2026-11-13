@@ -21,6 +21,28 @@ Motion Studio includes **15 selectable animated style presets**. Browse [STYLE_G
 
 Upload audio (up to **2 minutes / 30 MB**) to generate a video matching its duration. The browser estimates changes in audio energy and suggests scene cuts; the original audio is included in preview and export. Optionally enable a subtle transition sound effect. Enter the text you want to use in the prompt, separating phrases with punctuation.
 
-This is an **editing template**, not automatic speech transcription, semantic understanding, beat-perfect editing, footage search or text-to-video AI. It does not create subtitles from your audio. With no prompt it uses neutral scene labels. Uploads and renders stay in the local ignored `renders/` folder; IDs are lost on a server restart, after which you must upload again. Remove `renders/uploads/` when done. Don't expose this development server to the public internet: it has no authentication or user isolation.
+This is an **editing template**, not text-to-video AI or beat-perfect editing. Local transcription and optional Pexels stock search require the setup below. Audio stays on the server during transcription; enabling stock search sends only the displayed search terms to Pexels. Search matches are heuristic, so review captions, timing, and clips. Uploads and renders stay in the ignored `renders/` folder; IDs are lost on a server restart, after which you must upload again. Remove `renders/uploads/` when done. Do not expose this development server to the public internet: it has no authentication or user isolation.
 
 To run the small test suite: `node --test tests/*.test.js`. Export requires a compatible Chromium and Linux libraries including `libnss3` and `libnspr4`; set `CHROME_PATH` to a local executable if needed.
+
+## Automatic subtitles (local Whisper)
+
+The app can transcribe uploaded audio on the server using [whisper.cpp](https://github.com/ggml-org/whisper.cpp). This is opt-in infrastructure: neither the CLI nor the model is bundled. Install and build whisper.cpp and download a **multilingual** model such as `base` following its official documentation (the initial model download requires internet). English-only `.en` models cannot transcribe Hindi. Set these environment variables before starting the app:
+
+- `WHISPER_CPP_BIN`: absolute path to the built `whisper-cli` executable.
+- `WHISPER_MODEL`: absolute path to the downloaded `ggml-base.bin` or another compatible multilingual model.
+- `FFMPEG_PATH` (optional): path to ffmpeg; Linux x64 uses Remotion's bundled binary by default.
+
+Example, after building whisper.cpp in your home directory:
+
+```sh
+export WHISPER_CPP_BIN="$HOME/whisper.cpp/build/bin/whisper-cli"
+export WHISPER_MODEL="$HOME/whisper.cpp/models/ggml-base.bin"
+npm run dev
+```
+
+On upload, transcription runs locally on the server; choose Auto, Hindi or English and retry if needed. No audio is sent to a transcription provider. Whisper segments are split into short readable captions with **estimated timing within each segment**, not precise word alignment. Correct the text in the editor, then regenerate. Results can be inaccurate, especially for mixed languages or noise. A missing model or CLI is reported in the UI and the manual prompt workflow remains usable.
+
+## Optional stock footage
+
+For keyword-based stock video, obtain a Pexels API key through Pexels and configure `PEXELS_API_KEY` **in the server environment**, not in source control or chat. Restart the server. In the app, explicitly enable “Find matching Pexels stock clips”; inspect the displayed keywords or enter an English search phrase before generating. Only up to four unique search terms are sent to Pexels, never the audio. Pexels clips are downloaded into ignored `renders/uploads/`, credited on screen, and used as muted backgrounds; their availability and license are subject to [Pexels' license](https://www.pexels.com/license/) and API terms. In environments that block Pexels network access, this feature cannot fetch footage. If the key is absent, the service fails, a clip is too large, or no usable match exists, the UI reports this and falls back to motion graphics. The app does **not** generate new video footage or understand audio semantically.

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {AbsoluteFill, Audio, Composition, Easing, Img, Sequence, continueRender, delayRender, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Composition, Easing, Img, Loop, OffthreadVideo, Sequence, continueRender, delayRender, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {getStyle} from './styles.js';
 
 export const defaultVideo = {
@@ -31,7 +31,8 @@ export function MotionComposition({video=defaultVideo}) {
  return <AbsoluteFill style={{background:preset.background,color:preset.ink,fontFamily:'MotionHindi, sans-serif',overflow:'hidden'}}>
   {preset.id==='cinematic'&&<AbsoluteFill style={{opacity:.42,transform:`scale(${scale})`}}><Img src={staticFile('aurora.png')} style={{width:'100%',height:'100%',objectFit:'cover'}}/></AbsoluteFill>}
   {preset.motif==='glow'&&<AbsoluteFill style={{background:`radial-gradient(circle at 75% 60%, ${preset.accent}33, transparent 55%)`}}/>}
-  <Art preset={preset} frame={local} vertical={vertical}/>
+  {scenes.map((item,i)=>item.footageId&&<Sequence key={`clip-${i}`} from={item.from} durationInFrames={(scenes[i+1]?.from??durationInFrames)-item.from}><Loop durationInFrames={150}><OffthreadVideo src={item.footageSrc||`/api/media/${item.footageId}`} muted style={{width:'100%',height:'100%',objectFit:'cover'}}/></Loop></Sequence>)}
+  {scene.footageId?<AbsoluteFill style={{background:preset.light?'linear-gradient(90deg, rgba(250,242,232,.94), rgba(250,242,232,.45))':'linear-gradient(90deg, rgba(8,9,16,.91), rgba(8,9,16,.45))'}}/>:<Art preset={preset} frame={local} vertical={vertical}/>}
   <AbsoluteFill style={{padding:vertical?'9%':'5%',justifyContent:'space-between'}}>
    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',fontSize:vertical?15:13,letterSpacing:3,fontWeight:700,opacity:.75}}><span>✳ &nbsp; MOTION STUDIO</span><span>{String(index+1).padStart(2,'0')} / {String(scenes.length).padStart(2,'0')}</span></div>
    <div style={{opacity:alpha,transform:`translateY(${y}px)`,textAlign:vertical?'center':'left',width:vertical?'100%':'57%',alignSelf:vertical?'center':'flex-start',marginTop:vertical?'-35%':0}}>
@@ -41,6 +42,8 @@ export function MotionComposition({video=defaultVideo}) {
    </div>
    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',fontSize:12,letterSpacing:2,opacity:.7}}><span>{preset.name.toUpperCase()}</span><span>✳</span></div>
   </AbsoluteFill>
+  {scene.credit&&<div style={{position:'absolute',right:'5%',bottom:'5%',fontSize:10,opacity:.7,color:preset.ink}}>Footage: {scene.credit} / Pexels</div>}
+  {video.subtitles?.filter(c=>frame>=Math.round(c.start*30)&&frame<Math.round(c.end*30)).slice(0,1).map((c,i)=><div key={i} style={{position:'absolute',left:vertical?'8%':'15%',right:vertical?'8%':'15%',bottom:vertical?'11%':'12%',textAlign:'center',fontFamily:'MotionHindi, sans-serif',fontSize:vertical?27:25,lineHeight:1.4,color:'#fff',fontWeight:700,textShadow:'0 2px 5px #000',background:'rgba(0,0,0,.72)',borderRadius:8,padding:'10px 16px'}}>{c.text}</div>)}
   {video.mediaId&&<Audio src={video.audioSrc||`/api/media/${video.mediaId}`} />}
   {video.sfx&&scenes.slice(1).map((s,i)=><Sequence key={i} from={s.from} durationInFrames={Math.min(11,durationInFrames-s.from)}><Audio src={staticFile('soft-transition.wav')} volume={.45}/></Sequence>)}
  </AbsoluteFill>;

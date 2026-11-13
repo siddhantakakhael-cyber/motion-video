@@ -23,6 +23,6 @@ Choose a preset in Motion Studio, or use these as creative directions for a cust
 ## Audio-first workflow
 
 1. Upload a supported audio track (up to 2 minutes and 30 MB), choose a style and optionally supply the on-screen text in the prompt. The browser decodes audio locally to estimate energy changes and uploads it to the local render server.
-2. The studio suggests cuts from audio energy with fallback spacing. It is not beat detection, speech recognition, transcription, automatic footage selection, or an AI editor. Review the generated storyboard and preview it with sound; select a later scene and nudge its cut earlier or later.
+2. The studio suggests cuts from audio energy with fallback spacing. Configured local Whisper can create editable subtitles; optional Pexels stock search uses displayed keywords. Neither feature is semantic AI editing or beat-perfect detection. Review the storyboard, captions and footage; select a later scene to nudge its cut.
 3. Toggle the included soft transition sound effect on or off. The original audio is retained for the full video. Choose aspect ratio before generating.
 4. Export the rendered MP4. Uploaded audio and renders are stored in ignored `renders/`; server memory holds upload IDs until it restarts. On restart, upload the audio again. Delete `renders/uploads/` when no longer needed. Never push a user's audio or derived content without their permission.
