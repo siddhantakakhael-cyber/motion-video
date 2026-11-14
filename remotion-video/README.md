@@ -68,3 +68,22 @@ npx remotion render DiwaliHindiFacts out/diwali-hindi.mp4
 ```sh
 npx remotion render DiwaliEditorial out/diwali-editorial.mp4
 ```
+
+## Odisha ancient science reel
+
+`OdishaAncientScience` is a 720×1280 (9:16), ~103-second Instagram reel in a dark "museum spotlight" style. Eight scenes cut hard against an AI-selected narrator's Hinglish dialogue (`public/odisha/vo-*.mp3`), with synced caption pills, kinetic headlines, stat chips, a segmented progress bar, and an end-card CTA for the "Anything" channel. All visuals are code-drawn vector art (Konark wheel, sun-dial, magnet, Lingaraj deul, Ratna Bhandar vault, Khandagiri caves). The percussion music bed is generated programmatically by `scripts/make-bed.mjs` — kicks, booms and whooshes land exactly on the scene cut frames, and the riser sweeps into the CTA.
+
+Preview it in Studio, or render an MP4:
+
+```sh
+npx remotion render OdishaAncientScience out/odisha-ancient-science.mp4
+```
+
+On machines without a system Chromium (e.g. minimal Linux sandboxes), install `@sparticuz/chromium`, extract its bundled libraries (`bin/al2023.tar.br` → `/tmp/al2023`), then pass:
+
+```sh
+export LD_LIBRARY_PATH=/tmp/al2023/lib
+npx remotion render OdishaAncientScience out/odisha-ancient-science.mp4 --browser-executable=/tmp/chromium
+```
+
+To change the channel name, edit the `Anything` wordmark in `CtaArt` and the `BrandFoot` line in the same file (`src/OdishaAncientScience.tsx`).
