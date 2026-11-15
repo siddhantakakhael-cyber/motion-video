@@ -87,3 +87,11 @@ npx remotion render OdishaAncientScience out/odisha-ancient-science.mp4 --browse
 ```
 
 To change the channel name, edit the `Anything` wordmark in `CtaArt` and the `BrandFoot` line in the same file (`src/OdishaAncientScience.tsx`).
+
+## Sampati: The Untold Sacrifice
+
+`SampatiUntold` is a 720×1280 (9:16), ~67-second Ramayana short (Kishkindha Kanda, Sarga 56–58) in a night-sky mythic style. Seven scenes tell Sampati's story — the flight toward Surya, the wing sacrifice that saved Jatayu, the grounded years, and the eagle-vision moment that revealed Sita in Lanka — with Hinglish narration, synced caption pills, code-drawn vector birds, ember particles and a generated percussion/wind/pad bed aligned to scene cuts (`scripts/make-sampati-bed.mjs`).
+
+```sh
+npx remotion render SampatiUntold out/sampati-untold.mp4
+```
