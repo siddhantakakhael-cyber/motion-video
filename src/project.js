@@ -12,6 +12,7 @@ export const STYLES = [
   { id: 'caption', name: 'Caption Cuts', hi: 'कैप्शन कट्स', family: 'Edit & Documentary', accent: '#FF3B30', blurb: 'Hard-cut kinetic words for talking-head hooks.' },
   { id: 'mythic', name: 'Mythic Epic', hi: 'पौराणिक', family: 'Epic & Lore', accent: '#E10600', blurb: 'Blood-red dust, gold, cracks in the earth and a curse that lands on the beat.' },
   { id: 'cartoon', name: 'Cartoon Epic', hi: 'कार्टून', family: 'Cartoons', accent: '#FF6B2C', blurb: 'Bright 2D cartoon: full characters, faces, scenery, comic bursts and motion lines.' },
+  { id: 'epic', name: 'Kurukshetra Epic', hi: 'युद्ध सिनेमा', family: 'Cinematic & Mythic', accent: '#D9A441', blurb: 'Cinematic war plates, slow push-ins, gold type and a clearly divine Mother Earth.' },
 ];
 
 export const SIZES = {
@@ -75,10 +76,10 @@ export const PRESETS = [
     },
   },
   {
-    id: 'karna', label: 'कर्ण का श्राप · Cartoon (58s)',
+    id: 'karna', label: 'कर्ण का श्राप · War Epic (58s)',
     project: {
       title: 'कर्ण का छिपा श्राप', handle: '@mahabharata.reels',
-      style: 'cartoon', accent: '#FF6B2C', size: 'reel-hd',
+      style: 'epic', accent: '#D9A441', size: 'reel-hd',
       intro: 0, outro: 0, sceneDurations: [7, 13, 15, 13, 10], bpm: 84, music: true,
       script: `अर्जुन के बाणों ने नहीं...\\nएक बच्ची के आँसुओं ने मारा था! | महाभारत · कर्ण पर्व | wheel\nज़मीन में मिल गया सारा घी... | युद्ध से कई साल पहले | ghee\nमिट्टी निचोड़ कर निकाल दिया घी! | आँसू पोंछने के लिए | squeeze\n"मैं तुम्हारे रथ का पहिया निगल जाऊँगी!" | धरती माँ का श्राप | curse\nनेकी की कीमत... जान! | कुरुक्षेत्र · 17वाँ दिन | arrow`,
     },

@@ -1,5 +1,6 @@
 // The film itself. One deterministic function: drawFrame(g, W, H, t, project).
-// No video model, no stock footage — every pixel is drawn in code. The same
+// Camera moves, grading, typography and SFX are drawn in code; the featured
+// Kurukshetra Epic style composites five generated cinematic plates. The same
 // module runs in the browser (live preview) and in Node (frame-by-frame export).
 
 import {
@@ -8,6 +9,7 @@ import {
   drawFitted, roundRect, line, lineGrow, dot, arrow,
 } from './lib.js';
 import { normalizeProject, timeline, atTime, STYLES } from './project.js';
+import { getSceneImage } from './sceneImages.js';
 
 const TEXT_IN = 0.46;
 const TEXT_OUT = 0.34;
@@ -1083,7 +1085,170 @@ function cartoon(ctx) {
   }
 }
 
-const RENDERERS = { swiss, neon, keynote, blueprint, riso, caption, mythic, cartoon };
+
+// ------------------------------------------------------- 9. KURUKSHETRA EPIC ---
+// Cinematic generated plates + code-drawn camera moves, grading, captions, SFX.
+const E_GOLD = '#D9A441', E_CREAM = '#FFF3D6', E_INK = '#120A07', E_RED = '#B22A1A';
+
+function epicFallback(ctx, visual) {
+  const { g, W, H } = ctx;
+  const sky = g.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#1C2B42'); sky.addColorStop(0.48, '#8A5124'); sky.addColorStop(1, '#2A160C');
+  fill(g, W, H, sky);
+  const glow = g.createRadialGradient(W * 0.72, H * 0.30, 0, W * 0.72, H * 0.30, W * 0.55);
+  glow.addColorStop(0, 'rgba(255,205,110,0.55)'); glow.addColorStop(1, 'rgba(255,205,110,0)');
+  g.fillStyle = glow; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#20120B'; g.fillRect(0, H * 0.74, W, H * 0.26);
+  g.strokeStyle = withAlpha(E_GOLD, 0.35); g.lineWidth = 2 * ctx.u;
+  g.beginPath(); g.arc(W * 0.5, H * 0.72, W * 0.28, 0, TAU); g.stroke();
+}
+
+function epicPlate(ctx, visual, p) {
+  const { g, W, H } = ctx;
+  const img = getSceneImage(visual) || getSceneImage('wheel');
+  if (!img) { epicFallback(ctx, visual); return; }
+  const iw = Number(img.width || img.naturalWidth || W);
+  const ih = Number(img.height || img.naturalHeight || H);
+  const zoom = 1.035 + 0.085 * eio(clamp(p));
+  const scale = Math.max(W / iw, H / ih) * zoom;
+  const dw = iw * scale, dh = ih * scale;
+  const maxX = Math.max(0, (dw - W) / 2), maxY = Math.max(0, (dh - H) / 2);
+  const dir = visual === 'curse' ? -1 : visual === 'arrow' ? 1 : 0.5;
+  const panX = dir * Math.sin(p * Math.PI) * 0.28;
+  const panY = (visual === 'squeeze' ? -0.18 : 0.10) * Math.sin(p * Math.PI);
+  const dx = -maxX + clamp(panX, -1, 1) * maxX;
+  const dy = -maxY + clamp(panY, -1, 1) * maxY;
+  g.drawImage(img, dx, dy, dw, dh);
+}
+
+function epicGrade(ctx) {
+  const { g, W, H } = ctx;
+  g.save();
+  const top = g.createLinearGradient(0, 0, 0, H * 0.28);
+  top.addColorStop(0, 'rgba(8,5,3,0.68)'); top.addColorStop(1, 'rgba(8,5,3,0)');
+  g.fillStyle = top; g.fillRect(0, 0, W, H * 0.28);
+  const bottom = g.createLinearGradient(0, H * 0.66, 0, H);
+  bottom.addColorStop(0, 'rgba(8,5,3,0)'); bottom.addColorStop(1, 'rgba(8,5,3,0.84)');
+  g.fillStyle = bottom; g.fillRect(0, H * 0.66, W, H * 0.34);
+  g.fillStyle = 'rgba(190,105,26,0.075)'; g.fillRect(0, 0, W, H);
+  const vignette = g.createRadialGradient(W / 2, H * 0.47, H * 0.12, W / 2, H * 0.50, H * 0.78);
+  vignette.addColorStop(0, 'rgba(0,0,0,0)'); vignette.addColorStop(1, 'rgba(8,4,2,0.58)');
+  g.fillStyle = vignette; g.fillRect(0, 0, W, H);
+  g.restore();
+}
+
+function epicParticles(ctx) {
+  const { g, W, H, u, A, t } = ctx;
+  const rand = mulberry(900 + (A.shotNumber || 1) * 137);
+  g.save();
+  for (let i = 0; i < 52; i++) {
+    const x0 = rand() * W, y0 = rand() * H, speed = 0.35 + rand() * 0.9, size = (0.6 + rand() * 1.5) * u;
+    const x = (x0 + t * 24 * u * speed) % W;
+    const y = (y0 - t * 11 * u * speed + H) % H;
+    g.fillStyle = `rgba(255,218,138,${(0.045 + rand() * 0.13).toFixed(3)})`;
+    g.beginPath(); g.arc(x, y, size, 0, TAU); g.fill();
+  }
+  g.restore();
+}
+
+function epicBox(ctx, x, y, w, h, alpha = 1) {
+  const { g, u } = ctx;
+  g.save(); g.globalAlpha *= alpha;
+  roundRect(g, x, y, w, h, 10 * u);
+  g.fillStyle = 'rgba(12,8,6,0.84)'; g.fill();
+  g.strokeStyle = withAlpha(E_GOLD, 0.72); g.lineWidth = 2 * u; g.stroke();
+  g.fillStyle = E_GOLD; g.fillRect(x, y + 4 * u, 5 * u, h - 8 * u);
+  g.restore();
+}
+
+function epicHeading(ctx, text, alpha, reveal, y, h, size) {
+  const { g, W, M, u } = ctx;
+  epicBox(ctx, M * 0.55, y, W - M * 1.1, h, alpha);
+  drawFitted(g, text, {
+    x: M * 0.95, y: y + h * 0.08, w: W - M * 1.9, h: h * 0.84,
+    size, minSize: 28 * u, weight: 800, family: fontFor(text), color: E_CREAM,
+    stroke: true, strokeColor: E_INK, strokeWidth: 4 * u,
+    shadowColor: 'rgba(0,0,0,0.85)', shadowBlur: 8 * u,
+    reveal, alpha, align: 'center',
+  });
+}
+
+function epicArrowStreak(ctx, p) {
+  const { g, W, H, u, A, t } = ctx;
+  const alpha = 1 - clamp(seg(t, A.start + 3.5, A.start + 4.7));
+  if (alpha <= 0.01) return;
+  const x = lerp(-W * 0.18, W * 1.18, clamp((t - A.start - 0.35) / 3.9));
+  g.save(); g.globalAlpha *= alpha;
+  g.strokeStyle = 'rgba(255,241,190,0.92)'; g.lineWidth = 4 * u; g.lineCap = 'round';
+  g.beginPath(); g.moveTo(x - W * 0.34, H * 0.325); g.lineTo(x, H * 0.372); g.stroke();
+  g.fillStyle = E_RED;
+  g.beginPath(); g.moveTo(x, H * 0.372); g.lineTo(x - W * 0.050, H * 0.345); g.lineTo(x - W * 0.050, H * 0.399); g.closePath(); g.fill();
+  g.restore();
+}
+
+function epic(ctx) {
+  const { g, W, H, u, M, P, A, t, accent } = ctx;
+  const C = content(ctx), ap = appearance(A);
+  const visual = A.scene?.visual || (A.kind === 'outro' ? 'arrow' : 'wheel');
+  const span = Math.max(0.001, A.end - A.start);
+  const p = clamp((t - A.start) / span);
+
+  epicPlate(ctx, visual, p);
+  epicGrade(ctx);
+  epicParticles(ctx);
+  if (visual === 'arrow') epicArrowStreak(ctx, p);
+
+  // Top kicker: small and restrained, so the plate stays visible.
+  epicBox(ctx, M * 0.55, H * 0.034, W - M * 1.1, H * 0.043, 0.92);
+  label(g, `महाभारत  ·  कर्ण पर्व  ·  ${String(A.shotNumber).padStart(2, '0')}/${String(A.totalShots).padStart(2, '0')}`,
+    W / 2, H * 0.065, 20 * u, E_CREAM, 700, 'Noto Devanagari', 'center');
+
+  const lines = C.heading.split('\n');
+  if (lines.length > 1) {
+    const p1 = clamp(seg(t, A.start + 0.15, A.start + 0.95)) * (1 - clamp(seg(t, A.start + 3.0, A.start + 3.8)));
+    if (p1 > 0.01) epicHeading(ctx, lines[0], p1 * ap.alpha, eio(clamp((t - A.start - 0.15) / 0.7)), H * 0.09, H * 0.115, 58 * u);
+    const q = clamp(seg(t, A.start + 3.3, A.start + 4.2));
+    if (q > 0.01) epicHeading(ctx, lines[1], q * ap.alpha, eio(q), H * 0.09, H * 0.115, 58 * u);
+  } else {
+    epicHeading(ctx, C.heading, ap.alpha, ap.reveal, H * 0.09, H * 0.125, visual === 'curse' ? 60 * u : 68 * u);
+  }
+
+  // Detail chip, above the bottom safe zone.
+  const chipY = H * 0.815, chipH = H * 0.055;
+  epicBox(ctx, M * 0.7, chipY, W - M * 1.4, chipH, 0.94);
+  drawFitted(g, C.detail, {
+    x: M, y: chipY + chipH * 0.10, w: W - 2 * M, h: chipH * 0.80,
+    size: 28 * u, minSize: 16 * u, weight: 700, family: fontFor(C.detail),
+    color: E_CREAM, stroke: true, strokeColor: E_INK, strokeWidth: 2 * u,
+    reveal: eio(clamp(A.enter - 0.1)), alpha: ap.alpha, align: 'center',
+  });
+
+  // Warm SFX flashes, never a black veil.
+  const hits = P.audio?.sfx
+    ? P.audio.sfx.map(s => Number(s.at) || 0)
+    : timeline(P).filter(w => w.scene).map(w => w.start + (w.scene.visual === 'squeeze' ? 8 : w.scene.visual === 'curse' ? 7 : w.scene.visual === 'arrow' ? 2 : 0));
+  let flash = 0;
+  for (const h of hits) if (t >= h && t < h + 0.42) flash = Math.max(flash, 1 - (t - h) / 0.42);
+  if (flash > 0) { g.fillStyle = withAlpha('#FFE6A0', flash * 0.28); g.fillRect(0, 0, W, H); }
+
+  // Progress rail.
+  const ry = H - M * 0.55, rh = 7 * u, rw = W - 2 * M;
+  g.fillStyle = withAlpha(E_CREAM, 0.28); g.fillRect(M, ry, rw, rh);
+  g.fillStyle = accent; g.fillRect(M, ry, rw * clamp(t / P.duration), rh);
+  for (const win of timeline(P)) {
+    if (win.number === 1) continue;
+    const x = M + rw * clamp(win.start / P.duration);
+    g.fillStyle = E_GOLD; g.fillRect(x - 1.5 * u, ry - 3 * u, 3 * u, rh + 6 * u);
+  }
+
+  // Final cut to black covers captions too.
+  if (visual === 'arrow') {
+    const fade = eio(clamp(seg(t, P.duration - 1.35, P.duration - 0.12)));
+    if (fade > 0) { g.fillStyle = `rgba(6,4,3,${fade})`; g.fillRect(0, 0, W, H); }
+  }
+}
+
+const RENDERERS = { swiss, neon, keynote, blueprint, riso, caption, mythic, cartoon, epic };
 
 export function drawFrame(g, W, H, t, rawProject) {
   const P = rawProject && rawProject.duration ? rawProject : normalizeProject(rawProject || {});

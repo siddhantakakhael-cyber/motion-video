@@ -58,6 +58,7 @@ function staticPath(pathname) {
   if (pathname.startsWith('/fonts/')) return { root: join(PUBLIC, 'fonts'), rel: pathname.slice(7) };
   if (pathname.startsWith('/samples/')) return { root: join(PUBLIC, 'samples'), rel: pathname.slice(9) };
   if (pathname.startsWith('/examples/')) return { root: join(ROOT, 'examples'), rel: pathname.slice(10) };
+  if (pathname.startsWith('/assets/')) return { root: join(PUBLIC, 'assets'), rel: pathname.slice(8) };
   return { root: PUBLIC, rel: pathname === '/' ? 'index.html' : pathname.slice(1) };
 }
 

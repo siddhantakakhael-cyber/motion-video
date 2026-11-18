@@ -4,10 +4,11 @@ import {
 import { drawFrame } from '/src/renderer.js';
 import { scorePCM, pcmToWav } from '/src/score.js';
 import { complement } from '/src/lib.js';
+import { setSceneImage, SCENE_IMAGE_FILES } from '/src/sceneImages.js';
 
 const $ = id => document.getElementById(id);
 const SWATCHES = ['#E30613', '#FF5A00', '#22E6C8', '#7C6BFF', '#FF4E7A', '#FFC42E', '#67D9FF', '#39D6A5'];
-const STYLE_BG = { swiss: '#F1EFE9', neon: '#05070E', keynote: '#08090D', blueprint: '#0A2942', riso: '#F5EBDB', caption: '#0A0A0A', mythic: '#1C0807', cartoon: '#9BE8FF' };
+const STYLE_BG = { swiss: '#F1EFE9', neon: '#05070E', keynote: '#08090D', blueprint: '#0A2942', riso: '#F5EBDB', caption: '#0A0A0A', mythic: '#1C0807', cartoon: '#9BE8FF', epic: '#2A170D' };
 const PREVIEW_SCALE = 0.5;
 
 let P = projectFromPreset('design');
@@ -336,12 +337,25 @@ function bindEvents() {
   });
 }
 
+// ----------------------------------------------------------- scene plates ---
+async function preloadSceneImages() {
+  if (typeof Image === 'undefined') return;
+  const loads = Object.entries(SCENE_IMAGE_FILES).map(([key, file]) => new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => { setSceneImage(key, img); resolve(); };
+    img.onerror = () => resolve();
+    img.src = `/assets/scenes/${file}`;
+  }));
+  await Promise.race([Promise.all(loads), new Promise(r => setTimeout(r, 2000))]);
+}
+
 // ------------------------------------------------------------------- init ---
 async function init() {
   buildStaticUI();
   syncInputs();
   queueAudio();
   refreshDerived();
+  await preloadSceneImages();
   renderPreview();
   bindEvents();
   try {
