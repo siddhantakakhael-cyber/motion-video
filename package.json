@@ -1,0 +1,24 @@
+{
+  "name": "motion-reels",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Instagram Reel studio: motion-graphics videos made entirely in code (canvas + ffmpeg), inspired by lemo-opuscar.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "render": "node scripts/render.js",
+    "sample": "node scripts/render.js --project examples/sample-reel.json --out public/samples/sample-reel.mp4",
+    "samples": "node scripts/render.js --project examples/sample-reel.json --out public/samples/sample-reel.mp4 && node scripts/render.js --preset chai --out public/samples/chai-reel.mp4 && node scripts/render.js --preset launch --out public/samples/launch-reel.mp4 && node scripts/render.js --preset hooks --out public/samples/hook-reel.mp4",
+    "karna": "node scripts/render-karna.js"
+  },
+  "dependencies": {
+    "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/noto-sans-devanagari": "^0.4.2",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@napi-rs/canvas": "^1.1.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

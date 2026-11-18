@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motion Reels · code-made Instagram videos</title>
+  <meta name="description" content="Write a script, pick a film style and export a 9:16 MP4 for Instagram. Every frame is drawn in code.">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="brand-text"><strong>MOTION<span>/</span>REELS</strong><small>Code-made videos for Instagram</small></div>
+      </div>
+      <div class="topbar-right">
+        <span class="pill" id="enginePill"><span class="dot"></span> engine ready</span>
+        <a class="ref-link" href="/downloads.html" target="_blank" rel="noopener">↓ Downloads</a>
+        <a class="ref-link" href="https://github.com/lemomo-ai/lemo-opuscar" target="_blank" rel="noopener">inspired by lemo-opuscar ↗</a>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <!-- ------------------------------------------------------------ controls -->
+      <aside class="panel controls" id="controls">
+        <section class="control-section">
+          <div class="section-title"><span>01</span><h3>Content</h3></div>
+          <label class="field-label" for="presetRow">Start from a preset</label>
+          <div class="chips" id="presetRow"></div>
+
+          <label class="field-label" for="titleInput">Reel title</label>
+          <input id="titleInput" class="text-input" type="text" maxlength="70" autocomplete="off">
+
+          <label class="field-label" for="scriptInput">Script <em>one shot per line · Heading | Detail</em></label>
+          <textarea id="scriptInput" class="text-input script" rows="7" spellcheck="false"></textarea>
+          <p class="hint" id="scriptHint">4 shots · 13.2s</p>
+
+          <label class="field-label" for="handleInput">Handle / CTA</label>
+          <input id="handleInput" class="text-input" type="text" maxlength="40" autocomplete="off">
+        </section>
+
+        <section class="control-section">
+          <div class="section-title"><span>02</span><h3>Look</h3></div>
+          <div class="style-grid" id="styleGrid"></div>
+          <label class="field-label">Signal colour</label>
+          <div class="accent-row">
+            <input id="accentInput" type="color" value="#E30613" aria-label="Custom accent colour">
+            <div class="swatches" id="swatchRow"></div>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-title"><span>03</span><h3>Format &amp; motion</h3></div>
+          <label class="field-label">Canvas</label>
+          <div class="segmented" id="sizeRow"></div>
+
+          <div class="slider-row">
+            <label for="durationRange">Shot length <output id="durationOut">2.5s</output></label>
+            <input id="durationRange" type="range" min="1.8" max="4" step="0.1">
+          </div>
+          <div class="slider-row">
+            <label for="bpmRange">Tempo <output id="bpmOut">112 BPM</output></label>
+            <input id="bpmRange" type="range" min="80" max="150" step="1">
+          </div>
+          <label class="field-label" for="timingsInput">Shot lengths <em>seconds, comma separated · optional</em></label>
+          <input id="timingsInput" class="text-input" type="text" placeholder="e.g. 7, 13, 15, 13, 10" autocomplete="off">
+          <p class="hint">Leave empty for equal shots. Use exact timings for a 50–60s story.</p>
+          <label class="toggle">
+            <input id="musicToggle" type="checkbox" checked>
+            <span class="track"><span class="knob"></span></span>
+            <span>Procedural soundtrack <small>kick · hat · bass · pad</small></span>
+          </label>
+        </section>
+
+        <section class="control-section export-section">
+          <div class="section-title"><span>04</span><h3>Export</h3></div>
+          <button class="btn primary" id="exportBtn">
+            <span class="btn-icon">⬇</span><span>Export MP4 for Instagram</span>
+          </button>
+          <div class="progress" id="progressWrap" hidden>
+            <div class="progress-bar"><i id="progressBar"></i></div>
+            <p id="progressText">Preparing…</p>
+          </div>
+          <div class="export-result" id="exportResult" hidden>
+            <video id="exportVideo" controls playsinline></video>
+            <a class="btn primary small" id="downloadLink" href="#" download>⬇ Download MP4</a>
+          </div>
+          <button class="btn ghost" id="stillBtn">⬡ Download cover frame (PNG)</button>
+          <p class="fine">H.264 · AAC · faststart · 30 fps · no video model, no stock footage.</p>
+        </section>
+      </aside>
+
+      <!-- --------------------------------------------------------------- stage -->
+      <section class="stage">
+        <div class="stage-head">
+          <div>
+            <h2>Live preview</h2>
+            <p>The exact frames that will be rendered into your MP4.</p>
+          </div>
+          <div class="stage-actions">
+            <button class="btn ghost small" id="shuffleBtn">⤨ Shuffle</button>
+            <button class="btn ghost small" id="safeBtn">▦ Safe zones</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <div class="frame" id="frame">
+            <canvas id="preview" width="540" height="960" aria-label="Reel preview"></canvas>
+            <div class="safe-overlay" id="safeOverlay" hidden>
+              <div class="safe-top"><span>◀ Instagram top UI · keep clear</span></div>
+              <div class="safe-bottom"><span>◀ captions / buttons · keep clear</span></div>
+              <div class="safe-side left"></div><div class="safe-side right"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport">
+          <button class="round-btn" id="playBtn" aria-label="Play">▶</button>
+          <button class="round-btn" id="restartBtn" aria-label="Restart">↺</button>
+          <span class="time" id="timeLabel">0.0 / 0.0s</span>
+          <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Timeline">
+          <span class="format" id="formatLabel">1080 × 1920</span>
+        </div>
+
+        <div class="shot-strip" id="shotStrip"></div>
+        <p class="stage-note">Tip: the first 1 second decides everything. Put the result in your opening line.</p>
+      </section>
+
+      <!-- ---------------------------------------------------------------- plan -->
+      <aside class="panel plan">
+        <div class="section-title"><span>∞</span><h3>Reel plan</h3></div>
+        <div id="shotList" class="shot-list"></div>
+
+        <div class="spec-card">
+          <h4>Export spec</h4>
+          <dl id="specList"></dl>
+        </div>
+
+        <div class="tip-card">
+          <h4>Instagram checklist</h4>
+          <ul>
+            <li>9:16 · 1080 × 1920 for Reels</li>
+            <li>Hook in the first second</li>
+            <li>Keep text above the caption area</li>
+            <li>Under 60s, H.264 + AAC</li>
+          </ul>
+          <p class="hi">रील्स के लिए: पहला 1 सेकंड हुक, 9:16, टेक्स्ट ऊपर, 30 fps।</p>
+        </div>
+
+        <div class="sample-card">
+          <h4>Featured · कर्ण का श्राप <a href="/samples/karna-reel.mp4" target="_blank" rel="noopener">open ↗</a></h4>
+          <video src="/samples/karna-reel.mp4" poster="/samples/karna-poster.png" controls playsinline preload="none"></video>
+          <p>58s · 1080 × 1920 · Hindi voiceover + synced SFX.</p>
+          <div class="sample-links">
+            <a href="/samples/karna-reel.mp4" download>↓ कर्ण श्राप</a>
+            <a href="/samples/sample-reel.mp4" download>↓ Design rules</a>
+            <a href="/samples/chai-reel.mp4" download>↓ Hindi chai</a>
+            <a href="/samples/launch-reel.mp4" download>↓ Launch</a>
+            <a href="/samples/hook-reel.mp4" download>↓ Hook cuts</a>
+          </div>
+          <p class="fine">5 ready-to-upload MP4s in <code>public/samples/</code>. Script: <code>examples/karna-reel.json</code>.</p>
+        </div>
+
+        <div class="how-card">
+          <h4>How it works</h4>
+          <p>Your script becomes a shot list. Each style is a drawing program: canvas frames are rendered deterministically at every timestamp, then piped to ffmpeg with a synthesised score. The same code drives this preview and the final file.</p>
+          <a href="https://github.com/lemomo-ai/lemo-opuscar" target="_blank" rel="noopener">Read the style toolbox →</a>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>Motion Reels · every frame drawn in code</span>
+      <span id="footerStatus">ready</span>
+    </footer>
+  </div>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
