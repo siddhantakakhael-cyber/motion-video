@@ -709,7 +709,381 @@ function mythic(ctx) {
   }
 }
 
-const RENDERERS = { swiss, neon, keynote, blueprint, riso, caption, mythic };
+// ------------------------------------------------------------- 8. CARTOON ---
+// A bright, fully drawn 2D-cartoon telling of the same story: real characters,
+// faces, scenery and comic effects — nothing hidden in silhouette.
+const C_INK = '#2B1A12', C_SKIN = '#F8CFA1', C_SKIN_D = '#E2A273';
+const C_GOLD = '#FFC93C', C_GOLD_D = '#DF9618', C_CREAM = '#FFF7E4';
+const C_SKY = '#86D3FF', C_SKY_LO = '#E9F8FF', C_SUN = '#FFD84D';
+const C_GRASS = '#79C95C', C_GRASS_D = '#4B9637', C_SOIL = '#D89A5B', C_SOIL_D = '#A96C38';
+const C_RED = '#FF5A3C', C_TEAL = '#3BC0A8', C_TEAL_D = '#1E8C9B', C_CLOUD = '#FFFFFF';
+const C_PINK = '#FF93A8', C_BLUE = '#4FB8FF', C_PURPLE = '#8A6BFF';
+
+function celShape(g, fill, lw, fn) {
+  g.beginPath(); fn();
+  g.fillStyle = fill; g.fill();
+  if (lw > 0) {
+    g.strokeStyle = C_INK; g.lineWidth = lw; g.lineJoin = 'round'; g.lineCap = 'round'; g.stroke();
+  }
+}
+function celEllipse(g, x, y, rx, ry, fill, lw = 4) { celShape(g, fill, lw, () => g.ellipse(x, y, rx, ry, 0, 0, TAU)); }
+function celCircle(g, x, y, r, fill, lw = 4) { celEllipse(g, x, y, r, r, fill, lw); }
+function celRect(g, x, y, w, h, r, fill, lw = 4) { celShape(g, fill, lw, () => g.roundRect(x, y, w, h, r)); }
+function celLine(g, x1, y1, x2, y2, color, lw = 5) {
+  g.save(); g.strokeStyle = color; g.lineWidth = lw; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.restore();
+}
+function celArc(g, x, y, r, a0, a1, color, lw = 5) {
+  g.save(); g.strokeStyle = color; g.lineWidth = lw; g.lineCap = 'round';
+  g.beginPath(); g.arc(x, y, r, a0, a1); g.stroke(); g.restore();
+}
+
+function cartoonSun(g, x, y, r) {
+  g.save(); g.strokeStyle = C_SUN; g.lineWidth = r * 0.13; g.lineCap = 'round';
+  for (let i = 0; i < 12; i++) {
+    const a = i * TAU / 12;
+    g.beginPath(); g.moveTo(x + Math.cos(a) * r * 1.25, y + Math.sin(a) * r * 1.25);
+    g.lineTo(x + Math.cos(a) * r * 1.65, y + Math.sin(a) * r * 1.65); g.stroke();
+  }
+  g.restore();
+  celCircle(g, x, y, r, C_SUN, r * 0.09);
+  celCircle(g, x - r * 0.28, y - r * 0.28, r * 0.16, withAlpha('#FFFFFF', 0.65), 0);
+}
+function cartoonCloud(g, x, y, s) {
+  celRect(g, x - s, y - s * 0.38, s * 2, s * 0.78, s * 0.38, C_CLOUD, s * 0.06);
+  celCircle(g, x - s * 0.5, y - s * 0.22, s * 0.48, C_CLOUD, s * 0.06);
+  celCircle(g, x + s * 0.22, y - s * 0.38, s * 0.58, C_CLOUD, s * 0.06);
+  celCircle(g, x + s * 0.66, y - s * 0.12, s * 0.40, C_CLOUD, s * 0.06);
+}
+function cartoonTree(g, x, y, s) {
+  celRect(g, x - s * 0.10, y - s * 0.55, s * 0.20, s * 0.95, s * 0.06, C_SOIL_D, s * 0.05);
+  celCircle(g, x - s * 0.32, y - s * 0.62, s * 0.42, C_GRASS, s * 0.05);
+  celCircle(g, x + s * 0.30, y - s * 0.66, s * 0.44, C_GRASS_D, s * 0.05);
+  celCircle(g, x, y - s * 0.95, s * 0.52, C_GRASS, s * 0.05);
+}
+function cartoonFlag(g, x, y, s, color) {
+  celLine(g, x, y, x, y - s * 1.6, C_INK, s * 0.10);
+  celShape(g, color, s * 0.06, () => { g.moveTo(x, y - s * 1.55); g.lineTo(x + s * 0.95, y - s * 1.25); g.lineTo(x, y - s * 0.95); g.closePath(); });
+}
+function cartoonDust(g, x, y, s) {
+  celCircle(g, x - s * 0.45, y + s * 0.10, s * 0.34, C_CREAM, s * 0.05);
+  celCircle(g, x, y - s * 0.12, s * 0.46, C_CLOUD, s * 0.05);
+  celCircle(g, x + s * 0.48, y + s * 0.12, s * 0.32, C_CREAM, s * 0.05);
+}
+function cartoonBurst(g, cx, cy, r, fill, points = 12, lw = 5) {
+  celShape(g, fill, lw, () => {
+    for (let i = 0; i < points * 2; i++) {
+      const a = i * Math.PI / points - Math.PI / 2;
+      const rr = i % 2 ? r * 0.58 : r;
+      const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.closePath();
+  });
+}
+function cartoonMotion(g, cx, cy, r0, r1, count, color, lw = 5) {
+  for (let i = 0; i < count; i++) {
+    const a = i * TAU / count + 0.12;
+    celLine(g, cx + Math.cos(a) * r0, cy + Math.sin(a) * r0, cx + Math.cos(a) * r1, cy + Math.sin(a) * r1, color, lw);
+  }
+}
+function cartoonLightning(g, x, y, s, color = C_SUN) {
+  celShape(g, color, s * 0.06, () => {
+    g.moveTo(x, y); g.lineTo(x - s * 0.35, y + s * 0.9); g.lineTo(x - s * 0.05, y + s * 0.9);
+    g.lineTo(x - s * 0.30, y + s * 1.9); g.lineTo(x + s * 0.38, y + s * 0.78);
+    g.lineTo(x + s * 0.06, y + s * 0.78); g.closePath();
+  });
+}
+
+// A full little person: head, hair/crown, expressive face, tunic, arms, legs.
+function cartoonPerson(g, x, y, s, o = {}) {
+  const body = o.body || C_GOLD, lw = Math.max(2, s * 0.055);
+  // legs
+  celRect(g, x - s * 0.62, y + s * 1.45, s * 0.48, s * 0.95, s * 0.20, o.pants || C_SOIL_D, lw);
+  celRect(g, x + s * 0.14, y + s * 1.45, s * 0.48, s * 0.95, s * 0.20, o.pants || C_SOIL_D, lw);
+  // tunic
+  celRect(g, x - s * 0.86, y + s * 0.48, s * 1.72, s * 1.28, s * 0.36, body, lw);
+  celLine(g, x - s * 0.82, y + s * 1.18, x + s * 0.82, y + s * 1.18, C_GOLD_D, lw * 1.2);
+  // arms
+  g.save(); g.translate(x - s * 0.82, y + s * 0.68); g.rotate(o.armL ?? -0.45);
+  celRect(g, -s * 0.22, -s * 0.16, s * 0.42, s * 1.15, s * 0.20, body, lw);
+  celCircle(g, 0, s * 1.02, s * 0.26, C_SKIN, lw); g.restore();
+  g.save(); g.translate(x + s * 0.82, y + s * 0.68); g.rotate(o.armR ?? 0.45);
+  celRect(g, -s * 0.20, -s * 0.16, s * 0.42, s * 1.15, s * 0.20, body, lw);
+  celCircle(g, 0, s * 1.02, s * 0.26, C_SKIN, lw); g.restore();
+  // hair cap behind head
+  celEllipse(g, x, y - s * 0.36, s * 0.98, s * 0.62, o.hair || '#3B2417', lw);
+  // face
+  celCircle(g, x, y, s, C_SKIN, lw);
+  // ears
+  celCircle(g, x - s * 0.96, y + s * 0.06, s * 0.20, C_SKIN, lw);
+  celCircle(g, x + s * 0.96, y + s * 0.06, s * 0.20, C_SKIN, lw);
+  // eyes
+  const ex = s * 0.36, ey = y - s * 0.08;
+  [-1, 1].forEach(d => {
+    celEllipse(g, x + d * ex, ey, s * 0.24, s * 0.30, C_CLOUD, lw * 0.7);
+    celCircle(g, x + d * ex + (o.look || 0) * s * 0.06, ey + s * 0.03, s * 0.12, o.eyes || C_INK, 0);
+    celCircle(g, x + d * ex - s * 0.045, ey - s * 0.075, s * 0.045, C_CLOUD, 0);
+  });
+  // eyebrows
+  const angry = o.mood === 'angry', worried = o.mood === 'worried';
+  celLine(g, x - ex - s * 0.22, ey - s * 0.42 + (angry ? s * 0.12 : 0), x - ex + s * 0.18, ey - s * 0.42 + (angry ? -s * 0.02 : 0), C_INK, lw * 0.9);
+  celLine(g, x + ex - s * 0.18, ey - s * 0.42 + (angry ? -s * 0.02 : 0), x + ex + s * 0.22, ey - s * 0.42 + (angry ? s * 0.12 : 0), C_INK, lw * 0.9);
+  // mouth
+  if (o.mood === 'shout') celEllipse(g, x, y + s * 0.46, s * 0.28, s * 0.20, '#8C2F2F', lw * 0.7);
+  else if (worried || angry) celArc(g, x, y + s * 0.62, s * 0.30, Math.PI * 1.15, Math.PI * 1.85, C_INK, lw * 0.9);
+  else celArc(g, x, y + s * 0.36, s * 0.32, Math.PI * 0.15, Math.PI * 0.85, C_INK, lw * 0.9);
+  // moustache / crown / bow
+  if (o.moustache) {
+    celArc(g, x - s * 0.20, y + s * 0.30, s * 0.22, Math.PI * 0.1, Math.PI * 0.9, '#3B2417', lw * 0.8);
+    celArc(g, x + s * 0.20, y + s * 0.30, s * 0.22, Math.PI * 0.1, Math.PI * 0.9, '#3B2417', lw * 0.8);
+  }
+  if (o.crown) {
+    for (let i = -2; i <= 2; i++) celShape(g, C_GOLD, lw * 0.7, () => {
+      const bx = x + i * s * 0.32;
+      g.moveTo(bx - s * 0.13, y - s * 0.82); g.lineTo(bx, y - s * 1.35 - (i === 0 ? s * 0.16 : 0)); g.lineTo(bx + s * 0.13, y - s * 0.82); g.closePath();
+    });
+    celRect(g, x - s * 0.78, y - s * 0.92, s * 1.56, s * 0.22, s * 0.08, C_GOLD_D, lw * 0.7);
+  }
+  if (o.bow) {
+    celCircle(g, x + s * 0.72, y - s * 0.72, s * 0.24, C_PINK, lw * 0.7);
+  }
+  if (o.blush) { [-1, 1].forEach(d => celCircle(g, x + d * s * 0.66, y + s * 0.28, s * 0.14, withAlpha(C_PINK, 0.65), 0)); }
+  if (o.tears) { [-1, 1].forEach(d => celEllipse(g, x + d * ex, ey + s * 0.34, s * 0.09, s * 0.18, C_BLUE, 0)); }
+}
+
+function cartoonWheel(g, cx, cy, r, lw) {
+  celCircle(g, cx, cy, r, C_GOLD, lw * 1.8);
+  celCircle(g, cx, cy, r * 0.82, withAlpha(C_GOLD_D, 0.35), lw);
+  for (let i = 0; i < 10; i++) {
+    const a = i * TAU / 10;
+    celLine(g, cx + Math.cos(a) * r * 0.14, cy + Math.sin(a) * r * 0.14, cx + Math.cos(a) * r * 0.92, cy + Math.sin(a) * r * 0.92, C_GOLD_D, lw * 0.8);
+  }
+  celCircle(g, cx, cy, r * 0.20, C_GOLD_D, lw);
+  celCircle(g, cx, cy, r * 0.09, C_CREAM, lw * 0.6);
+}
+
+function cartoonBase(ctx, visual) {
+  const { g, W, H, u, t } = ctx;
+  const warm = visual === 'ghee' || visual === 'squeeze';
+  const curse = visual === 'curse';
+  const grd = g.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, curse ? '#FFB26B' : warm ? '#FFE3A0' : C_SKY);
+  grd.addColorStop(1, curse ? '#FFD9A0' : warm ? '#FFF0C8' : C_SKY_LO);
+  g.fillStyle = grd; g.fillRect(0, 0, W, H);
+  cartoonSun(g, W * 0.84, H * 0.135, W * 0.075);
+  cartoonCloud(g, W * 0.22, H * 0.155, W * 0.10);
+  cartoonCloud(g, W * 0.60, H * 0.225, W * 0.075);
+  if (curse) { cartoonCloud(g, W * 0.34, H * 0.30, W * 0.12); }
+  // rolling hills
+  celShape(g, C_GRASS, 4 * u, () => {
+    g.moveTo(0, H * 0.56);
+    g.quadraticCurveTo(W * 0.22, H * 0.44, W * 0.46, H * 0.56);
+    g.quadraticCurveTo(W * 0.72, H * 0.42, W, H * 0.56);
+    g.lineTo(W, H * 0.72); g.lineTo(0, H * 0.72); g.closePath();
+  });
+  celShape(g, C_GRASS_D, 0, () => {
+    g.moveTo(0, H * 0.62); g.quadraticCurveTo(W * 0.35, H * 0.54, W * 0.68, H * 0.64);
+    g.quadraticCurveTo(W * 0.86, H * 0.58, W, H * 0.63); g.lineTo(W, H * 0.72); g.lineTo(0, H * 0.72); g.closePath();
+  });
+  // ground
+  g.fillStyle = curse ? '#C56A3C' : C_SOIL; g.fillRect(0, H * 0.70, W, H * 0.30);
+  celLine(g, 0, H * 0.70, W, H * 0.70, C_INK, 5 * u);
+  for (let i = 0; i < 16; i++) {
+    const x = hash(i * 7.3) * W, y = H * (0.71 + hash(i * 3.1) * 0.25);
+    celLine(g, x, y, x - 10 * u, y - 14 * u, C_GRASS_D, 2.5 * u);
+    celLine(g, x, y, x + 11 * u, y - 12 * u, C_GRASS, 2.5 * u);
+  }
+  if (visual === 'wheel' || visual === 'arrow') {
+    cartoonFlag(g, W * 0.10, H * 0.70, W * 0.075, C_RED);
+    cartoonFlag(g, W * 0.90, H * 0.70, W * 0.075, C_PURPLE);
+    cartoonTree(g, W * 0.05, H * 0.70, W * 0.085);
+    cartoonDust(g, W * 0.30, H * 0.69, W * 0.06);
+    cartoonDust(g, W * 0.74, H * 0.70, W * 0.05);
+  } else {
+    cartoonTree(g, W * 0.08, H * 0.70, W * 0.10);
+    cartoonTree(g, W * 0.94, H * 0.70, W * 0.085);
+  }
+  if (curse) {
+    cartoonLightning(g, W * 0.18, H * 0.05, W * 0.07);
+    cartoonLightning(g, W * 0.82, H * 0.08, W * 0.055, '#FFF1A8');
+  }
+}
+
+function cartoonScene(ctx, visual, p) {
+  const { g, W, H, u, t } = ctx;
+  const lw = 5 * u;
+  if (visual === 'wheel') {
+    // Karna on the chariot, alarmed, above the sinking wheel.
+    cartoonPerson(g, W * 0.50, H * 0.415, W * 0.085, { body: C_GOLD, crown: true, moustache: true, mood: 'worried', armL: -0.9, armR: 0.9 });
+    celRect(g, W * 0.30, H * 0.525, W * 0.40, H * 0.095, 14 * u, C_GOLD_D, lw);
+    cartoonWheel(g, W * 0.50, H * 0.685, W * 0.235, lw);
+    // mud swallowing the lower half
+    celShape(g, C_SOIL, 0, () => { g.moveTo(0, H * 0.755); g.quadraticCurveTo(W * 0.5, H * 0.72, W, H * 0.755); g.lineTo(W, H); g.lineTo(0, H); g.closePath(); });
+    cartoonDust(g, W * 0.50, H * 0.755, W * 0.10);
+    cartoonMotion(g, W * 0.50, H * 0.685, W * 0.26, W * 0.34, 10, C_RED, 4 * u);
+    cartoonBurst(g, W * 0.79, H * 0.60, W * 0.10, C_SUN, 10, lw);
+    label(g, 'धड़ाम!', W * 0.79, H * 0.615, 34 * u, C_INK, 900, 'Noto Devanagari', 'center');
+  } else if (visual === 'ghee') {
+    // little hut
+    celRect(g, W * 0.70, H * 0.485, W * 0.22, H * 0.19, 8 * u, '#F3D8A8', lw);
+    celShape(g, '#C4603C', lw, () => { g.moveTo(W * 0.66, H * 0.49); g.lineTo(W * 0.81, H * 0.40); g.lineTo(W * 0.96, H * 0.49); g.closePath(); });
+    // crying girl
+    cartoonPerson(g, W * 0.29, H * 0.565, W * 0.075, { body: C_PINK, bow: true, tears: true, mood: 'worried', blush: true, armL: -0.2, armR: 0.2 });
+    // broken pot shards
+    celArc(g, W * 0.58, H * 0.66, W * 0.115, Math.PI * 0.15, Math.PI * 0.92, C_SOIL_D, 9 * u);
+    celArc(g, W * 0.72, H * 0.685, W * 0.075, Math.PI * 1.05, Math.PI * 1.72, C_SOIL_D, 7 * u);
+    // ghee puddle
+    celEllipse(g, W * 0.63, H * 0.715, W * (0.16 + p * 0.07), H * 0.032, C_GOLD, lw);
+    celEllipse(g, W * 0.60, H * 0.708, W * 0.075, H * 0.013, C_CREAM, 0);
+    // Karna arriving in the background
+    cartoonPerson(g, W * 0.86, H * 0.545, W * 0.052, { body: C_GOLD, crown: true, mood: 'worried' });
+    cartoonBurst(g, W * 0.46, H * 0.60, W * 0.075, '#FFF1A8', 9, lw);
+  } else if (visual === 'squeeze') {
+    // two big hands crushing a clump of soil
+    const fy = H * 0.475, fw = W * 0.235, fh = H * 0.13;
+    [W * 0.12, W * 0.88 - fw].forEach((fx, i) => {
+      celRect(g, fx, fy - fh / 2, fw, fh, 22 * u, C_SKIN, lw);
+      for (let k = 1; k < 4; k++) celLine(g, fx + k * fw / 4, fy - fh * 0.34, fx + k * fw / 4, fy + fh * 0.34, C_SKIN_D, 3 * u);
+      celCircle(g, fx + (i ? 0 : fw), fy, 20 * u, C_SKIN, lw);
+    });
+    celShape(g, C_SOIL_D, lw, () => { g.ellipse(W * 0.5, fy, W * 0.085, H * 0.055, 0, 0, TAU); });
+    // ghee drops + pot
+    for (let i = 0; i < 10; i++) {
+      const dx = W * (0.43 + hash(i * 3.7) * 0.14);
+      const dy = fy + H * 0.06 + ((t * 150 * u + hash(i) * H * 0.20) % (H * 0.20));
+      celCircle(g, dx, dy, (5 + hash(i * 5) * 5) * u, C_GOLD, 2 * u);
+    }
+    celArc(g, W * 0.5, H * 0.735, W * 0.105, Math.PI, TAU, C_GOLD_D, 10 * u);
+    celEllipse(g, W * 0.5, H * 0.735, W * 0.10, H * 0.018, C_GOLD, 3 * u);
+    // happy girl peeking + Karna's determined face
+    cartoonPerson(g, W * 0.16, H * 0.655, W * 0.065, { body: C_PINK, bow: true, mood: 'happy', blush: true });
+    cartoonPerson(g, W * 0.84, H * 0.36, W * 0.070, { body: C_GOLD, crown: true, moustache: true, mood: 'angry' });
+    cartoonBurst(g, W * 0.50, H * 0.385, W * 0.115, C_SUN, 12, lw);
+    label(g, 'क्रैक!', W * 0.50, H * 0.40, 40 * u, C_INK, 900, 'Noto Devanagari', 'center');
+    cartoonMotion(g, W * 0.5, fy, W * 0.15, W * 0.22, 12, C_RED, 4 * u);
+  } else if (visual === 'curse') {
+    // cracked earth
+    for (let i = 0; i < 9; i++) crackLine(g, W * 0.5, H * 0.78, W * (0.3 + hash(i) * 0.4), -Math.PI / 2 + (i - 4) * 0.28, '#8E2F1E', 4 * u, 200 + i);
+    // aura burst
+    cartoonBurst(g, W * 0.5, H * 0.57, W * 0.42, withAlpha('#FFE07A', 0.85), 16, 6 * u);
+    // Bhudevi: large, colourful, clearly visible
+    const s = W * 0.125, y = H * 0.455;
+    celShape(g, C_TEAL, lw * 1.2, () => {
+      g.moveTo(W * 0.5 - s * 1.35, H * 0.94);
+      g.quadraticCurveTo(W * 0.5 - s * 1.0, H * 0.62, W * 0.5 - s * 0.55, H * 0.55);
+      g.lineTo(W * 0.5 + s * 0.55, H * 0.55);
+      g.quadraticCurveTo(W * 0.5 + s * 1.0, H * 0.62, W * 0.5 + s * 1.35, H * 0.94);
+      g.closePath();
+    });
+    celShape(g, C_TEAL_D, lw, () => { g.moveTo(W * 0.5 - s * 0.6, H * 0.60); g.lineTo(W * 0.5 + s * 0.6, H * 0.60); g.lineTo(W * 0.5 + s * 0.9, H * 0.92); g.lineTo(W * 0.5 - s * 0.9, H * 0.92); g.closePath(); });
+    cartoonPerson(g, W * 0.5, y, s, { body: C_TEAL, crown: true, mood: 'angry', eyes: '#C21E1E', armL: -1.25, armR: 1.25, blush: false });
+    cartoonBurst(g, W * 0.80, H * 0.50, W * 0.095, C_RED, 10, lw);
+    label(g, 'श्राप!', W * 0.80, H * 0.515, 32 * u, C_CREAM, 900, 'Noto Devanagari', 'center');
+    cartoonMotion(g, W * 0.5, H * 0.60, W * 0.30, W * 0.40, 14, '#FFF1A8', 5 * u);
+  } else if (visual === 'arrow') {
+    // Karna straining to lift the wheel
+    cartoonPerson(g, W * 0.50, H * 0.505, W * 0.085, { body: C_GOLD, crown: true, moustache: true, mood: 'shout', armL: -1.15, armR: 1.15 });
+    cartoonWheel(g, W * 0.50, H * 0.705, W * 0.225, lw);
+    celShape(g, C_SOIL, 0, () => { g.moveTo(0, H * 0.775); g.quadraticCurveTo(W * 0.5, H * 0.745, W, H * 0.775); g.lineTo(W, H); g.lineTo(0, H); g.closePath(); });
+    cartoonDust(g, W * 0.50, H * 0.775, W * 0.09);
+    // arrow streak
+    const ax = lerp(-W * 0.25, W * 1.25, clamp((t - (ctx.A.start + 0.4)) / 4.5));
+    celLine(g, ax - W * 0.42, H * 0.355, ax, H * 0.395, '#FFF1A8', 11 * u);
+    celShape(g, C_RED, lw, () => { g.moveTo(ax, H * 0.395); g.lineTo(ax - W * 0.075, H * 0.355); g.lineTo(ax - W * 0.075, H * 0.435); g.closePath(); });
+    cartoonMotion(g, ax - W * 0.1, H * 0.39, W * 0.05, W * 0.11, 8, C_CREAM, 4 * u);
+  } else {
+    cartoonPerson(g, W * 0.5, H * 0.50, W * 0.09, { body: C_GOLD, crown: true, mood: 'happy' });
+  }
+}
+
+function cartoonBanner(ctx, y, h, fill) {
+  const { g, W, M, u } = ctx;
+  celRect(g, M * 0.55, y + 8 * u, W - M * 1.1, h, 20 * u, withAlpha(C_INK, 0.18), 0);
+  celRect(g, M * 0.55, y, W - M * 1.1, h, 20 * u, fill, 6 * u);
+}
+
+function cartoon(ctx) {
+  const { g, W, H, u, M, P, A, t, accent } = ctx;
+  const C = content(ctx), ap = appearance(A);
+  const visual = A.scene?.visual || 'wheel';
+  cartoonBase(ctx, visual);
+  cartoonScene(ctx, visual, ap.reveal);
+
+  const lines = C.heading.split('\n');
+  if (lines.length > 1) {
+    // Hook: two bright comic beats.
+    const p1 = clamp(seg(t, A.start + 0.15, A.start + 0.95)) * (1 - clamp(seg(t, A.start + 3.0, A.start + 3.8)));
+    if (p1 > 0.01) {
+      cartoonBanner(ctx, H * 0.115, H * 0.12, C_RED);
+      drawFitted(g, lines[0], {
+        x: M, y: H * 0.125, w: W - 2 * M, h: H * 0.105, size: 62 * u, minSize: 28 * u,
+        weight: 900, family: fontFor(lines[0]), color: C_CREAM, stroke: true, strokeColor: C_INK, strokeWidth: 5 * u,
+        reveal: eio(clamp((t - A.start - 0.15) / 0.7)), alpha: p1, align: 'center',
+      });
+    }
+    const q = clamp(seg(t, A.start + 3.3, A.start + 4.2));
+    if (q > 0.01) {
+      cartoonBurst(g, W * 0.5, H * 0.195, W * 0.28, C_GOLD, 12, 6 * u);
+      cartoonBanner(ctx, H * 0.115, H * 0.12, C_RED);
+      const shake = (1 - eio(clamp((t - A.start - 3.3) / 0.55))) * Math.sin(t * 45) * 8 * u;
+      g.save(); g.translate(shake, 0);
+      drawFitted(g, lines[1], {
+        x: M * 0.8, y: H * 0.135, w: W - M * 1.6, h: H * 0.15, size: 66 * u, minSize: 30 * u,
+        weight: 900, family: fontFor(lines[1]), color: C_CREAM, stroke: true, strokeColor: C_INK, strokeWidth: 6 * u,
+        reveal: eio(q), alpha: q, align: 'center',
+      });
+      g.restore();
+    }
+  } else {
+    cartoonBanner(ctx, H * 0.115, H * 0.165, accent);
+    drawFitted(g, C.heading, {
+      x: M * 0.9, y: H * 0.128, w: W - M * 1.8, h: H * 0.14, size: visual === 'curse' ? 72 * u : 82 * u,
+      minSize: 30 * u, weight: 900, family: fontFor(C.heading), color: C_CREAM,
+      stroke: true, strokeColor: C_INK, strokeWidth: 6 * u, reveal: ap.reveal, alpha: ap.alpha, align: 'center',
+    });
+  }
+
+  // detail chip near the bottom, above the safe caption area
+  // top kicker ribbon drawn last so no comic burst can cover it
+  celRect(g, M * 0.55, H * 0.038, W - M * 1.1, H * 0.042, 10 * u, C_INK, 0);
+  label(g, `महाभारत  ·  कर्ण पर्व  ·  ${String(A.shotNumber).padStart(2, '0')}/${String(A.totalShots).padStart(2, '0')}`,
+    W / 2, H * 0.068, 20 * u, C_CREAM, 700, 'Noto Devanagari', 'center');
+
+  const chipY = H * 0.815, chipH = H * 0.055;
+  celRect(g, M * 0.7, chipY, W - M * 1.4, chipH, 14 * u, C_CREAM, 4 * u);
+  drawFitted(g, C.detail, {
+    x: M, y: chipY + chipH * 0.12, w: W - 2 * M, h: chipH * 0.78, size: 28 * u, minSize: 16 * u,
+    weight: 700, family: fontFor(C.detail), color: C_INK, align: 'center',
+    reveal: eio(clamp(A.enter - 0.1)), alpha: ap.alpha,
+  });
+
+  // SFX flash — bright, never a black veil.
+  const hits = P.audio?.sfx
+    ? P.audio.sfx.map(s => Number(s.at) || 0)
+    : timeline(P).filter(w => w.scene).map(w => w.start + (w.scene.visual === 'squeeze' ? 8 : w.scene.visual === 'curse' ? 7 : w.scene.visual === 'arrow' ? 2 : 0));
+  let flash = 0;
+  for (const h of hits) if (t >= h && t < h + 0.45) flash = Math.max(flash, 1 - (t - h) / 0.45);
+  if (flash > 0) { g.fillStyle = withAlpha('#FFF3B0', flash * 0.42); g.fillRect(0, 0, W, H); }
+
+  // comic progress rail
+  const ry = H - M * 0.55, rh = 9 * u, rw = W - 2 * M;
+  celRect(g, M, ry, rw, rh, rh / 2, C_CREAM, 3 * u);
+  g.fillStyle = C_RED; g.fillRect(M + 3 * u, ry + 3 * u, (rw - 6 * u) * clamp(t / P.duration), rh - 6 * u);
+  for (const win of timeline(P)) {
+    if (win.number === 1) continue;
+    const x = M + rw * clamp(win.start / P.duration);
+    g.fillStyle = C_INK; g.fillRect(x - 1.5 * u, ry - 3 * u, 3 * u, rh + 6 * u);
+  }
+
+  // final cut to black — covers the complete comic frame, including captions.
+  if (visual === 'arrow') {
+    const fade = eio(clamp(seg(t, P.duration - 1.35, P.duration - 0.12)));
+    if (fade > 0) { g.fillStyle = `rgba(12,9,8,${fade})`; g.fillRect(0, 0, W, H); }
+  }
+}
+
+const RENDERERS = { swiss, neon, keynote, blueprint, riso, caption, mythic, cartoon };
 
 export function drawFrame(g, W, H, t, rawProject) {
   const P = rawProject && rawProject.duration ? rawProject : normalizeProject(rawProject || {});

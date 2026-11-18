@@ -7,7 +7,7 @@ import { complement } from '/src/lib.js';
 
 const $ = id => document.getElementById(id);
 const SWATCHES = ['#E30613', '#FF5A00', '#22E6C8', '#7C6BFF', '#FF4E7A', '#FFC42E', '#67D9FF', '#39D6A5'];
-const STYLE_BG = { swiss: '#F1EFE9', neon: '#05070E', keynote: '#08090D', blueprint: '#0A2942', riso: '#F5EBDB', caption: '#0A0A0A' };
+const STYLE_BG = { swiss: '#F1EFE9', neon: '#05070E', keynote: '#08090D', blueprint: '#0A2942', riso: '#F5EBDB', caption: '#0A0A0A', mythic: '#1C0807', cartoon: '#9BE8FF' };
 const PREVIEW_SCALE = 0.5;
 
 let P = projectFromPreset('design');

@@ -4,7 +4,7 @@ Write a script, pick a film style, and export a **9:16 MP4 for Instagram Reels**
 
 Built with the [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) idea as inspiration: *a film style is a drawing program plus a set of invariants*. This repository is a fresh, browser-first implementation for short vertical social videos — it does not copy that project's demo films, style prompts or assets.
 
-**Featured build:** a complete **58-second Hindi Reel, “कर्ण का छिपा श्राप”** — 5 shots with exact 0/7/20/35/48/58 timings, a dedicated Mythic Epic style (sinking chariot wheel, spilled ghee, crushed earth, Bhūdevī, arrow), Hindi voiceover in two voices, and SFX synced to 0:00 / 0:28 / 0:42 / 0:50. See `public/samples/karna-reel.mp4` and the [Karna section](#the-karna-reel-58s).
+**Featured build:** a complete **58-second Hindi Reel, “कर्ण का छिपा श्राप”** — 5 shots with exact 0/7/20/35/48/58 timings, now in a **full bright Cartoon Epic style** with drawn characters, faces, scenery, comic bursts, the sinking chariot wheel, spilled ghee, Bhūdevī and the final arrow. Hindi voiceover in two voices and SFX stay synced to 0:00 / 0:28 / 0:42 / 0:50. See `public/samples/karna-reel.mp4` and the [Karna section](#the-karna-reel-58s).
 
 ---
 
@@ -38,7 +38,7 @@ To rebuild the featured 58s film: `npm run karna`.
 
 | | |
 |---|---|
-| **7 film styles** | Swiss Grid, Neon Tubes, Dark Keynote, Blueprint, Riso Print, Caption Cuts, **Mythic Epic** |
+| **8 film styles** | Swiss Grid, Neon Tubes, Dark Keynote, Blueprint, Riso Print, Caption Cuts, Mythic Epic, **Cartoon Epic** |
 | **Script → shot list** | One line per shot, `Heading | Detail | visualCue`; intro/end card are generated automatically (and can be set to zero length) |
 | **Variable timings** | `sceneDurations: [7,13,15,13,10]` for a 58-second story, or the equal-shots slider |
 | **Live preview** | The *same* `drawFrame()` used by the exporter, with play/pause, scrubbing and a shot timeline |
@@ -56,7 +56,7 @@ To rebuild the featured 58s film: `npm run karna`.
 ## Using the studio
 
 1. **Content** — pick a preset or type a title, handle and script. Each non-empty line becomes one shot; `|` splits the big line from the small caption.
-2. **Look** — choose one of the seven styles and a signal colour. Switching style loads that style's default accent; you can override it.
+2. **Look** — choose one of the eight styles and a signal colour. Switching style loads that style's default accent; you can override it.
 3. **Format & motion** — canvas, equal shot length (1.8–4.0 s), tempo (80–150 BPM), soundtrack, and an optional **Shot lengths** field (`7, 13, 15, 13, 10`) for exact story pacing.
 4. **Preview** — play, scrub, click a shot chip to jump, toggle safe zones, or shuffle style/colour/tempo.
 5. **Export** — press **Export MP4 for Instagram**. The server renders asynchronously; the UI polls progress, then shows a playable MP4 and a download button.
@@ -99,22 +99,22 @@ Five MP4s are already included in `public/samples/`: the Karna curse film, Swiss
 
 | Shot | Window | Visual cue | Voice |
 |---|---|---|---|
-| 1 Hook | 0:00–0:07 | `wheel` · golden wheel sinking, red crack, dust | deep narrator |
-| 2 Backstory | 0:07–0:20 | `ghee` · sepia flashback, crying girl, broken pot | narrator |
-| 3 Twist | 0:20–0:35 | `squeeze` · fists crushing soil, golden drops | narrator |
-| 4 Curse | 0:35–0:48 | `curse` · Bhūdevī rising, glowing eyes, glitch text | narrator + **Bhūdevī voice** |
-| 5 Climax | 0:48–0:58 | `arrow` · sunken wheel, arrow streak, cut to black | narrator |
+| 1 Hook | 0:00–0:07 | `wheel` · bright sky, Karna, golden chariot wheel sinking, comic dust | deep narrator |
+| 2 Backstory | 0:07–0:20 | `ghee` · bright village backdrop, crying girl, spilled ghee, broken pot | narrator |
+| 3 Twist | 0:20–0:35 | `squeeze` · Karna squeezing soil, golden ghee drops back into the pot, comic bursts | narrator |
+| 4 Curse | 0:35–0:48 | `curse` · full-colour Bhūdevī rising, angry face, comic curse burst | narrator + **Bhūdevī voice** |
+| 5 Climax | 0:48–0:58 | `arrow` · Karna with sunken wheel, visible arrow streak, final cut to black | narrator |
 
 Implementation notes:
 
 * `intro: 0` and `outro: 0` remove the generated title/end cards, so the five windows start exactly at `0, 7, 20, 35, 48` and end at `58`.
-* Each scene carries a `visual` cue. `src/renderer.js` → `mythic()` switches drawing programs on it; a hard `\n` in the hook heading drives the two-beat kinetic reveal, and the curse line gets a glitch split.
-* The score is ducked to 30% under the voice. Six Hindi WAV clips in `assets/voice/` are placed at `0.35, 7.35, 20.35, 35.35, 39.6, 48.35`; three are lightly `atempo`-fitted so they never spill into the next shot (see the printed `end` times from `npm run karna`).
+* Each scene carries a `visual` cue. `src/renderer.js` → `cartoon()` switches drawing programs on it; a hard `\n` in the hook heading drives the two-beat comic reveal, and every shot has a fully drawn foreground and background.
+* The score is ducked to 30% under the voice. Seven Hindi WAV clips in `assets/voice/` are placed at `0.35, 7.35, 20.35, 23.65, 35.35, 39.6, 48.35`; four are lightly `atempo`-fitted so they never spill into the next shot (see the printed `end` times from `npm run karna`).
 * `scripts/render-karna.js` mixes voice + `scorePCM()` + `addSfx()` into `karna-audio.wav`, then calls the normal `renderProject()` with `audioWav` so the video and audio share one timeline. SFX: sub-drop/creak at `0:00`, earth-crush at `0:28`, thunder + glitch at `0:42`, arrow at `0:50`.
 * Output: `public/samples/karna-reel.mp4` (58.03s, 1080×1920, H.264 + AAC), `karna-poster.png` (44s), and the standalone `karna-audio.wav`.
-* The third voiceover line is worded gently (“घर जाने का डर था”) because the original phrasing was blocked by speech content moderation; the meaning of the scene is unchanged.
+* One short clause in the third voiceover line is worded gently (“घर जाने का डर था”) because the exact phrasing was blocked by speech content moderation; the on-screen story text and the rest of the voiceover follow the supplied brief.
 
-To edit the story, change `examples/karna-reel.json` and run `npm run karna`. To use the same look for a different story, pick the **Mythic Epic** preset in the studio and set your own shot lengths.
+To edit the story, change `examples/karna-reel.json` and run `npm run karna`. To use the same look for a different story, pick **Cartoon Epic** in the studio (or the **कर्ण का श्राप · Cartoon** preset) and set your own shot lengths.
 
 ---
 
@@ -176,7 +176,7 @@ Node export ────────────┘        ▲
 server.js                 static studio + render API
 src/project.js            project model, presets, variable timeline
 src/lib.js                easing, colour, fitted text helpers
-src/renderer.js           seven style drawing programs (incl. mythic)
+src/renderer.js           eight style drawing programs (incl. cartoon)
 src/score.js              procedural score, SFX + WAV writer
 src/render.js             Node canvas → ffmpeg pipeline (accepts a mixed WAV)
 public/                   index.html, CSS, app.js, fonts, 5 sample MP4s

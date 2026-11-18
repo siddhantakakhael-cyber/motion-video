@@ -1,12 +1,18 @@
 {
   "title": "कर्ण का छिपा श्राप",
   "handle": "@mahabharata.reels",
-  "style": "mythic",
-  "accent": "#E10600",
+  "style": "cartoon",
+  "accent": "#FF6B2C",
   "size": "reel-hd",
   "intro": 0,
   "outro": 0,
-  "sceneDurations": [7, 13, 15, 13, 10],
+  "sceneDurations": [
+    7,
+    13,
+    15,
+    13,
+    10
+  ],
   "bpm": 84,
   "music": true,
   "scenes": [
@@ -32,32 +38,87 @@
       "heading": "\"मैं तुम्हारे रथ का पहिया निगल जाऊँगी!\"",
       "detail": "धरती माँ का श्राप",
       "visual": "curse",
-      "voice": "पर उस दर्द से धरती माँ कराह उठीं। उन्होंने प्रकट होकर श्राप दिया— हे कर्ण, जिस तरह एक बच्ची के लिए तुमने मुझे बेरहमी से निचोड़ा... ठीक उसी तरह, तुम्हारे सबसे निर्णायक युद्ध में मैं तुम्हारे रथ का पहिया निगल जाऊँगी!"
+      "voice": "पर उस दर्द से धरती माँ कराह उठीं। उन्होंने प्रकट होकर श्राप दिया— 'हे कर्ण, जिस तरह एक बच्ची के लिए तुमने मुझे बेरहमी से निचोड़ा... ठीक उसी तरह, तुम्हारे सबसे निर्णायक युद्ध में मैं तुम्हारे रथ का पहिया निगल जाऊँगी!'"
     },
     {
       "heading": "नेकी की कीमत... जान!",
       "detail": "कुरुक्षेत्र · 17वाँ दिन",
       "visual": "arrow",
-      "voice": "और कुरुक्षेत्र के सत्रहवें दिन ठीक वही हुआ। धरती ने पहिया पकड़ लिया... और दानवीर कर्ण ने एक नेक काम की कीमत अपनी जान देकर चुकाई।"
+      "voice": "और कुरुक्षेत्र के 17वें दिन ठीक वही हुआ। धरती ने पहिया पकड़ लिया... और दानवीर कर्ण ने एक नेक काम की कीमत अपनी जान देकर चुकाई।"
     }
   ],
   "audio": {
     "voice": [
-      { "file": "assets/voice/karna-1.wav", "at": 0.35, "tempo": 1.22 },
-      { "file": "assets/voice/karna-2.wav", "at": 7.35 },
-      { "file": "assets/voice/karna-3.wav", "at": 20.35 },
-      { "file": "assets/voice/karna-4a.wav", "at": 35.35 },
-      { "file": "assets/voice/karna-4b.wav", "at": 39.6, "gain": 1.08, "tempo": 1.34 },
-      { "file": "assets/voice/karna-5.wav", "at": 48.35, "tempo": 1.20 }
+      {
+        "file": "assets/voice/karna-1.wav",
+        "at": 0.35,
+        "tempo": 1.29
+      },
+      {
+        "file": "assets/voice/karna-2.wav",
+        "at": 7.35
+      },
+      {
+        "file": "assets/voice/karna-3a.wav",
+        "at": 20.35
+      },
+      {
+        "file": "assets/voice/karna-3b.wav",
+        "at": 23.65,
+        "tempo": 1.02
+      },
+      {
+        "file": "assets/voice/karna-4a.wav",
+        "at": 35.35
+      },
+      {
+        "file": "assets/voice/karna-4b.wav",
+        "at": 39.6,
+        "gain": 1.08,
+        "tempo": 1.34
+      },
+      {
+        "file": "assets/voice/karna-5.wav",
+        "at": 48.35,
+        "tempo": 1.2
+      }
     ],
     "sfx": [
-      { "type": "subdrop", "at": 0.0, "gain": 0.85 },
-      { "type": "creak", "at": 0.18, "gain": 0.55 },
-      { "type": "crush", "at": 28.0, "gain": 0.75 },
-      { "type": "thunder", "at": 42.0, "gain": 0.80 },
-      { "type": "glitch", "at": 42.12, "gain": 0.45 },
-      { "type": "arrow", "at": 50.0, "gain": 0.65 },
-      { "type": "thunder", "at": 56.4, "gain": 0.35 }
+      {
+        "type": "subdrop",
+        "at": 0.0,
+        "gain": 0.85
+      },
+      {
+        "type": "creak",
+        "at": 0.18,
+        "gain": 0.55
+      },
+      {
+        "type": "crush",
+        "at": 28.0,
+        "gain": 0.75
+      },
+      {
+        "type": "thunder",
+        "at": 42.0,
+        "gain": 0.8
+      },
+      {
+        "type": "glitch",
+        "at": 42.12,
+        "gain": 0.45
+      },
+      {
+        "type": "arrow",
+        "at": 50.0,
+        "gain": 0.65
+      },
+      {
+        "type": "thunder",
+        "at": 56.4,
+        "gain": 0.35
+      }
     ]
   }
 }
