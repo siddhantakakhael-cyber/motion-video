@@ -1,90 +1,78 @@
-# Motion graphics studio
+# Rahasya Sutra Studio
 
-Every frame is code. A video in this repo is one HTML file that exposes `window.seek(seconds)`;
-headless Chromium draws each frame, ffmpeg encodes them, and the narration is synthesised on the
-machine. No After Effects, no timeline editor, no render service.
+![Brand ident](docs/ident.jpg)
 
-![Barbarik reveal](docs/poster.jpg)
+Hindi suspense reels about the Ramayana, the Mahabharata and the Puranas — **50–60 seconds,
+1080 × 1920, 30 fps**, built as code. Every video in this repo is an HTML file that exposes
+`window.seek(seconds)`; headless Chromium draws each frame, ffmpeg encodes it, and the Hindi
+voiceover is synthesised on the machine. No editor, no templates, no stock footage.
 
-▶ **Watch:** [`videos/barbarik/out/barbarik-reel.mp4`](videos/barbarik/out/barbarik-reel.mp4)
-— 1080 × 1920, 30 fps, 56.8 s, Hindi voiceover, 13 MB.
+**Brand kit:** inks `#0A0A0A`, antique gold `#D4AF37`, crimson `#E50914`, off-white `#F5F5F0` ·
+Noto Sans Devanagari 800/900 · pure vector: chakra, mandala, silhouettes, parallax zoom, cut-only
+camera shake · `@rahasyasutrastudio`
 
 ## The videos
 
-| Video | Length | Size | What it is |
-| --- | --- | --- | --- |
-| [`barbarik`](videos/barbarik) | 56.8 s | 1080×1920 | Skanda Purana retelling: the real winner of the Mahabharat was not Arjuna. |
+| Video | Length | What it is |
+| --- | --- | --- |
+| [`brand-ident`](videos/brand-ident/out/brand-ident.mp4) | 6.0 s | Channel ident: chakra spin, crimson hit, `रहस्य सूत्र` lockup, handle, tagline. |
+| [`barbarik`](videos/barbarik) | 56.8 s | Pre-brand cut (photo-led) — the Skanda Purana story of Barbarik. Kept for reference; it predates the vector kit in `MOTION.md` and is **not** a template. |
 
-## The skills
+## The brand system
 
-The workflow comes from [charlie947/motion-graphics-skills](https://github.com/charlie947/motion-graphics-skills)
-(MIT), installed in [`.claude/skills/`](.claude/skills) — 15 skills for launch films, reels,
-animated charts, title sequences, brand intake and reel exports. `brand.md` and `MOTION.md` are the
-two files those skills ask for first, written for this channel.
+Three files, written once, read before every frame:
 
-Read order for a new video: `brand-intake` → `motion-brief-writer` → `launch-video` or `loop-cover`
-→ `reel-export`.
+- **[`brand.md`](brand.md)** — who we are, who watches, the palette, the type, and five hard nevers.
+- **[`MOTION.md`](MOTION.md)** — every hex, size, easing curve, parallax rate, shake envelope,
+  the texture rules, five things this motion must never do, and one 52-second example shot by shot.
+- **[`CLAUDE.md`](CLAUDE.md)** — the read-first rule plus the build commands.
 
-## Repository layout
+The reusable motion primitives live in **`brand/`**:
 
 ```
-.claude/skills/          the skill pack (15 skills + references)
-brand.md                 palette, type, voice, sign-off
-MOTION.md                the animation contract: timing, camera, texture, sound
-assets/fonts/            Noto Sans Devanagari + Inter (woff2, self-hosted)
-scripts/voice.mjs        narration (eSpeak-NG) + score + timing.js
-scripts/render.mjs       frames → H.264/AAC MP4
-scripts/poster.mjs       one still from any second
-videos/<slug>/
-  index.html             the whole animation, as window.seek(t)
-  script.json            narration text and voice settings
-  script.md              beat sheet, timings, sources
-  video.json             size, fps, audio path, output path
-  media/                 stills
-  audio/narration.wav    generated, mixed, ready for the mux
-  out/                   the MP4
+brand/kit.css     tokens, stage, headline/sub/kicker/handle type, glow, grain, dust, HUD, progress
+brand/kit.js      chakra(), mandala(), shake(), enter(), grow(), dust(), easing, seeded rand()
+brand/logo.svg    the chakra mark, gold on transparent
 ```
 
-## Build a video
+Every video links both kit files and stays a pure function of time.
+
+## Build
 
 ```bash
-npm install
+npm install                     # Chromium + ffmpeg + eSpeak-NG, all offline
 
-# 1. narration + score + timings (writes audio/narration.wav and timing.js)
-npm run voice -- videos/barbarik
-
-# 2. frames → MP4
-npm run render -- videos/barbarik
-
-# 3. a still, for thumbnails and README art
-npm run poster -- videos/barbarik 49 docs/poster.jpg
+npm run voice  -- videos/<slug> # Hindi narration (eSpeak-NG `hi`) + score + timing.js
+npm run render -- videos/<slug> # frames → H.264 High / yuv420p / bt709 / AAC
+npm run poster -- videos/<slug> 3.2 docs/still.png
+node scripts/score.mjs out.wav 6.0 1.2 4.4   # music only (idents, no narration)
 ```
 
-`npm run build` does voice + render in one go.
+`render.mjs` prints the final stream listing so the encode can be checked before upload; the
+ident and the reel both come out as `h264 (High), yuv420p(tv, bt709), 1080x1920, 30 fps` with an
+AAC 48 kHz stereo track. Rendering costs ~0.7 s per frame — a 57 s reel takes ~19 minutes.
 
-### What you need
+## Layout
 
-Node 20+, and nothing else that is not in `package.json`:
+```
+.claude/skills/    15 skills from charlie947/motion-graphics-skills (MIT), see ATTRIBUTION.md
+brand.md            brand intake
+MOTION.md           the motion contract
+CLAUDE.md           read-first rule for agents
+brand/              the kit: tokens, SVG primitives, logo
+assets/fonts/       Noto Sans Devanagari + Inter (woff2, self-hosted)
+scripts/            voice · render · score · poster
+videos/<slug>/      index.html (window.seek), script.json, script.md, media/, audio/, out/
+```
 
-- **Chromium** comes from `@sparticuz/chromium` and is unpacked into `.cache/` on first run.
-- **ffmpeg** comes from `@ffmpeg-installer/ffmpeg` (static build, includes libx264 and AAC).
-- **Voice** comes from `espeak-ng` compiled to WebAssembly — Hindi included, no API key, offline.
+## Rules that ship with the brand
 
-Render speed is about 0.7 s per frame on a shared CPU, so a 57-second 30 fps reel takes ~19 minutes.
-Cut `fps` in `video.json` or lower `crf`/`maxrate` for drafts.
-
-## Adding a video
-
-1. Copy `videos/barbarik` to `videos/<slug>`.
-2. Replace `script.json` (narration, one entry per scene) and `media/`.
-3. Write `index.html`: keep the `window.seek(t)` contract, read `window.TIMING` for starts, hold
-   type inside y 360–1420.
-4. `npm run voice -- videos/<slug> && npm run render -- videos/<slug>`.
-
-The encoder rejects nothing by accident: `render.mjs` prints the final stream listing so you can
-check `h264`, `yuv420p`, `bt709` and the AAC track before uploading.
+1. Frame 0 always carries a visual hook — never a blank or slowly fading black frame.
+2. No purple-blue gradients. Only ink, gold, crimson, off-white.
+3. No bounce, overshoot or spring easing — `easeOutExpo` in, `easeInOutCubic` for camera.
+4. Vector only: chakra, mandala, silhouettes, light. No photos, no AI stills in new work.
+5. Nothing violent is shown. Sacred stories, symbolic visuals, 100% policy-safe.
 
 ## Licence
 
-Code MIT. Fonts: Noto Sans Devanagari and Inter (SIL OFL). Skills: MIT, © Charlie Hills.
-Imagery generated for this project.
+Code MIT. Fonts: Noto Sans Devanagari, Inter (SIL OFL). Skill pack: MIT © Charlie Hills.

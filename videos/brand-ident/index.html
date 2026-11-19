@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <title>Rahasya Sutra Studio — ident</title>
+    <link rel="stylesheet" href="../../brand/kit.css" />
+    <style>
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-800-normal.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-700-normal.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-600-normal.woff2") format("woff2");
+        font-weight: 600;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("../../assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+
+      #mark {
+        position: absolute;
+        left: 50%;
+        top: 620px;
+        width: 780px;
+        height: 780px;
+        margin-left: -390px;
+        margin-top: -390px;
+        opacity: 0;
+      }
+
+      #room {
+        position: absolute;
+        left: 50%;
+        top: 900px;
+        width: 1500px;
+        height: 1500px;
+        margin-left: -750px;
+        margin-top: -750px;
+        opacity: 0;
+      }
+
+      #flash {
+        position: absolute;
+        left: 50%;
+        top: 620px;
+        width: 780px;
+        height: 780px;
+        margin-left: -390px;
+        margin-top: -390px;
+        border: 3px solid var(--crimson);
+        border-radius: 50%;
+        opacity: 0;
+        box-shadow: 0 0 60px rgba(229, 9, 20, 0.35);
+      }
+
+      #topline {
+        position: absolute;
+        left: 50%;
+        top: 300px;
+        height: 3px;
+        width: 160px;
+        margin-left: -80px;
+        background: var(--gold);
+        box-shadow: 0 0 26px var(--gold-35);
+      }
+
+      .lockup::before {
+        content: "";
+        position: absolute;
+        left: -120px;
+        right: -120px;
+        top: -150px;
+        bottom: -60px;
+        z-index: -1;
+        background: radial-gradient(58% 52% at 50% 48%, rgba(6, 6, 6, 0.86), rgba(6, 6, 6, 0.4) 62%, transparent 82%);
+      }
+
+      .lockup {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        top: 860px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .name {
+        font-family: var(--font-hi);
+        font-weight: 800;
+        font-size: 156px;
+        line-height: 1.12;
+        letter-spacing: -2px;
+        opacity: 0;
+        text-shadow: 0 12px 50px rgba(0, 0, 0, 0.9);
+      }
+
+      .name.a {
+        color: var(--bone);
+      }
+
+      .name.b {
+        color: var(--gold);
+        background: linear-gradient(100deg, #f4d98a 0%, var(--gold) 34%, #a9822a 58%, #f0d68f 100%);
+        background-size: 240% 100%;
+        background-position: 0% 50%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: none;
+        filter: drop-shadow(0 10px 34px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 44px rgba(212, 175, 55, 0.22));
+      }
+
+      .studio {
+        margin-top: 14px;
+        font-family: var(--font-hi);
+        font-weight: 700;
+        font-size: 44px;
+        letter-spacing: 10px;
+        color: var(--gold);
+        opacity: 0;
+      }
+
+      #rule {
+        margin-top: 34px;
+      }
+
+      .tagline {
+        margin-top: 30px;
+        font-family: var(--font-hi);
+        font-weight: 500;
+        font-size: 33px;
+        letter-spacing: 4px;
+        color: var(--bone-70);
+        opacity: 0;
+      }
+
+      #handle {
+        margin-top: 26px;
+      }
+
+      #boot {
+        position: absolute;
+        inset: 0;
+        background: var(--ink);
+        opacity: 0;
+        z-index: 20;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="camera" id="camera">
+        <div class="glow"></div>
+        <div id="room"></div>
+        <div id="mark"></div>
+        <div id="flash"></div>
+        <div id="topline"></div>
+
+        <div class="lockup">
+          <div class="name a" id="hiName">रहस्य</div>
+          <div class="name b" id="hiSutra">सूत्र</div>
+          <div class="studio" id="hiStudio">स्टूडियो</div>
+          <div class="hairline" id="rule"></div>
+          <div class="tagline" id="tagline">अनसुनी कहानियाँ · हर युग से</div>
+          <div class="handle" id="handle">@rahasyasutrastudio</div>
+        </div>
+      </div>
+
+      <div class="dust" id="dust"></div>
+      <div class="grain" id="grain"></div>
+      <div class="vignette"></div>
+      <div id="boot"></div>
+    </div>
+
+    <script src="../../brand/kit.js"></script>
+    <script>
+      const B = window.Brand;
+      const DURATION = 6.0;
+      window.TIMING = { duration: DURATION, fps: 30, scenes: [], cta: { start: 0, duration: DURATION } };
+
+      const camera = document.getElementById("camera");
+      const mark = document.getElementById("mark");
+      const room = document.getElementById("room");
+      const flash = document.getElementById("flash");
+      const topline = document.getElementById("topline");
+      const hiName = document.getElementById("hiName");
+      const hiSutra = document.getElementById("hiSutra");
+      const hiStudio = document.getElementById("hiStudio");
+      const rule = document.getElementById("rule");
+      const tagline = document.getElementById("tagline");
+      const handle = document.getElementById("handle");
+      const grain = document.getElementById("grain");
+      const boot = document.getElementById("boot");
+
+      /* vector marks */
+      const chakra = B.chakra({ size: 780, spokes: 16 });
+      mark.appendChild(chakra);
+      const mandala = B.mandala({ size: 1500, petals: 24 });
+      room.appendChild(mandala);
+
+      const updateDust = B.dust(document.getElementById("dust"), 22, 11);
+
+      const HITS = [
+        { at: 1.2, amp: 17, decay: 0.105, rot: 0.5, seed: 3 },
+        { at: 4.4, amp: 8, decay: 0.1, rot: 0.24, seed: 9 },
+      ];
+
+      function seek(time) {
+        const t = B.clamp(time, 0, DURATION);
+
+        /* camera: shake only on impacts, sits at 1.03 so edges never show */
+        const s = B.shake(t, HITS);
+        camera.style.transform = `translate3d(${s.x.toFixed(2)}px, ${s.y.toFixed(2)}px, 0) rotate(${s.rot.toFixed(3)}deg) scale(1.035)`;
+
+        /* chakra: spinning, never resets, dims when the type needs the frame */
+        const spin = -28 + t * 138;
+        const grow = B.lerp(0.9, 1, B.easeOutExpo(B.clamp(t / 1.4)));
+        const pulse = 1 + 0.012 * Math.sin(t * 2.1);
+        mark.style.transform = `rotate(${spin.toFixed(2)}deg) scale(${(grow * pulse).toFixed(4)})`;
+        let markOpacity = 0.38 + 0.52 * B.easeOutExpo(B.clamp((t - 0.15) / 1.1));
+        if (t > 3.3) markOpacity = B.lerp(markOpacity, 0.46, B.clamp((t - 3.3) / 1.2));
+        if (t > 5.4) markOpacity = B.lerp(markOpacity, 0.3, B.clamp((t - 5.4) / 0.5));
+        mark.style.opacity = String(markOpacity);
+
+        /* mandala: the room. 3.5°/s */
+        room.style.transform = `rotate(${(t * 3.5).toFixed(2)}deg)`;
+        room.style.opacity = String(B.lerp(0.05, 0.2, B.easeOutCubic(B.clamp(t / 1.6))));
+
+        /* opening hairline — already 160px wide on frame 0, so the first frame is never empty */
+        const lineK = B.easeOutCubic(B.clamp(t / 0.75));
+        topline.style.width = `${(160 + 400 * lineK).toFixed(1)}px`;
+        topline.style.marginLeft = `${(-(160 + 400 * lineK) / 2).toFixed(1)}px`;
+        topline.style.opacity = String(1 - B.clamp((t - 1.1) / 0.6));
+
+        /* crimson: one ring on the first impact, then gone for the rest of the video */
+        if (t >= 1.2) {
+          const k = B.clamp((t - 1.2) / 0.6);
+          flash.style.opacity = String(0.9 * (1 - k));
+          flash.style.transform = `scale(${(0.86 + 0.45 * k).toFixed(3)})`;
+        } else {
+          flash.style.opacity = "0";
+        }
+
+        /* lockup */
+        B.enter(hiName, t, 1.45, { rise: 54, dur: 0.62 });
+        B.enter(hiSutra, t, 2.2, { rise: 54, dur: 0.62 });
+        B.enter(hiStudio, t, 2.95, { rise: 26, dur: 0.5 });
+        B.enter(handle, t, 3.75, { rise: 18, dur: 0.5 });
+        B.enter(tagline, t, 4.55, { rise: 18, dur: 0.5 });
+        B.grow(rule, t, 3.45, { width: 430, dur: 0.8 });
+
+        /* one gold sweep across the second word */
+        hiSutra.style.backgroundPosition = `${(8 + 54 * B.clamp((t - 2.2) / 1.6)).toFixed(1)}% 50%`;
+
+        /* the whole lockup lifts a touch as the tagline arrives */
+        const lift = B.easeInOutCubic(B.clamp((t - 4.3) / 0.9));
+        document.querySelector(".lockup").style.transform = `translate3d(0, ${(-18 * lift).toFixed(1)}px, 0)`;
+
+        updateDust(t);
+        const step = Math.round(t * 30);
+        grain.style.transform = `translate(${-(step * 17) % 120}px, ${-(step * 31) % 120}px)`;
+
+        /* close on ink */
+        boot.style.opacity = String(B.clamp((t - 5.62) / 0.3));
+      }
+
+      window.seek = seek;
+      window.READY = document.fonts.ready.then(() => {
+        seek(0);
+        return true;
+      });
+      seek(0);
+    </script>
+  </body>
+</html>

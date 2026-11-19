@@ -1,0 +1,10 @@
+{
+  "title": "Rahasya Sutra Studio — brand ident",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "audio": "audio/score.wav",
+  "out": "out/brand-ident.mp4",
+  "crf": 20,
+  "maxrate": "8M"
+}
