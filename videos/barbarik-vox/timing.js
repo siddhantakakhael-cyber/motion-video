@@ -6,31 +6,31 @@ window.TIMING = {
    "id": "hook",
    "start": 0,
    "duration": 7,
-   "speak": 6.31
+   "speak": 5.59
   },
   {
    "id": "arrows",
    "start": 7,
    "duration": 13,
-   "speak": 11.04
+   "speak": 12.1
   },
   {
    "id": "sacrifice",
    "start": 20,
    "duration": 14,
-   "speak": 11.78
+   "speak": 13.38
   },
   {
    "id": "question",
    "start": 34,
    "duration": 12,
-   "speak": 11.56
+   "speak": 11.14
   },
   {
    "id": "reveal",
    "start": 46,
    "duration": 9,
-   "speak": 7.64
+   "speak": 8.44
   }
  ],
  "cta": null,

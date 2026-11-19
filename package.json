@@ -8,7 +8,8 @@
     "voice": "node scripts/voice.mjs videos/barbarik",
     "render": "node scripts/render.mjs videos/barbarik",
     "build": "npm run voice && npm run render",
-    "poster": "node scripts/poster.mjs videos/barbarik"
+    "poster": "node scripts/poster.mjs videos/barbarik",
+    "get-voice": "node scripts/get-voice.mjs"
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",

@@ -16,7 +16,7 @@
 
 ## Narration (exact)
 
-1. महाभारत के अठारह दिन के महायुद्ध में करोड़ों योद्धा लड़े। पर असली विजेता न अर्जुन था, न भीम, न कर्ण।
+1. महाभारत के अठारह दिन के महायुद्ध में करोड़ों योद्धा लड़े। पर असली विजेता अर्जुन नहीं था।
 2. भीम का पोता बर्बरीक सिर्फ तीन अचूक बाण लेकर कुरुक्षेत्र पहुँचा। उसका एक ही बाण पूरी कौरव और पांडव सेना को रोक सकता था। तीन बाण — पहला सेना रोके, दूसरा युद्ध का अंत करे।
 3. धर्म की रक्षा के लिए श्रीकृष्ण ने दान में बर्बरीक का शीश माँगा। बिना एक पल सोचे उसने अपना शीश गुरु दक्षिणा में अर्पित कर दिया। पर एक आखिरी इच्छा रखी — मैं अपनी आँखों से पूरा युद्ध देखना चाहता हूँ।
 4. कृष्ण ने वरदान देकर उसका शीश ऊँचे पर्वत शिखर पर स्थापित किया। युद्ध के बाद पांडवों में बहस हुई — जीत किसकी वजह से हुई? सबने बर्बरीक से पूछा — तुमने युद्ध में किसे लड़ते देखा?
@@ -35,7 +35,12 @@
 
 `scripts/voice.mjs` writes `audio/narration.wav` in three layers:
 
-1. **Voice** — eSpeak-NG `hi`, one line per scene, trimmed and faded.
+1. **Voice** — Piper (`hi_IN-pratham-medium`, neural VITS @ 22.05 kHz, the same rate as the mix), one line per
+   scene, trimmed and faded. Each line is auto-fitted to its scene window: if the read is longer than
+   `duration − 0.5 s`, `voice.mjs` re-synthesises it faster (length-scale is solved directly, not walked down),
+   so the narration can never run into a cut. Voice models live in `voices/` (61 MB, git-ignored) and are fetched
+   with `node scripts/get-voice.mjs videos/barbarik-vox hi_IN-pratham-medium`. If Piper or the model is missing
+   the script falls back to eSpeak-NG, so a clone without the model still builds.
 2. **Score** — a D-minor drone that breathes on slow LFOs, plus a low impact on every cut.
 3. **Ambience** (`scripts/lib/ambience.mjs`, level `0.45` in `script.json`) — all synthesised:
    - night wind + air shimmer running the whole reel, breathing on 0.06/0.12 Hz LFOs
