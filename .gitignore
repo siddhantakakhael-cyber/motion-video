@@ -1,13 +1,13 @@
-node_modules
-.next
-out
-build
-dist
-.DS_Store
+node_modules/
+.cache/
 *.log
-.env*.local
-next-env.d.ts
-tsconfig.tsbuildinfo
-playwright-report
-test-results
-screenshots
+
+# render intermediates
+videos/*/out/frame-*
+videos/*/out/check-*
+videos/*/out/p*.png
+videos/*/out/f*.jpg
+videos/*/audio/line*.wav
+
+# macOS
+.DS_Store

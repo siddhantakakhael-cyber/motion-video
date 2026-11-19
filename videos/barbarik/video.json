@@ -1,0 +1,8 @@
+{
+  "title": "Barbarik — the real winner of the Mahabharat",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "audio": "audio/narration.wav",
+  "out": "out/barbarik-reel.mp4"
+}

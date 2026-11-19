@@ -1,27 +1,19 @@
 {
-  "name": "motion-studio",
+  "name": "motion-graphics-studio",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "description": "Frame-is-code motion graphics studio: every video is an HTML file with window.seek(), rendered to MP4 with headless Chromium + ffmpeg.",
   "scripts": {
-    "dev": "next dev -H 0.0.0.0 -p 3000",
-    "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 3000",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "mespeak": "^2.0.2",
-    "next": "^15.5.29",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "zustand": "5.0.3"
+    "voice": "node scripts/voice.mjs videos/barbarik",
+    "render": "node scripts/render.mjs videos/barbarik",
+    "build": "npm run voice && npm run render",
+    "poster": "node scripts/poster.mjs videos/barbarik"
   },
   "devDependencies": {
-    "@types/node": "22.10.7",
-    "@types/react": "19.0.7",
-    "@types/react-dom": "19.0.3",
-    "autoprefixer": "10.4.20",
-    "postcss": "8.5.1",
-    "tailwindcss": "3.4.17",
-    "typescript": "5.7.3"
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@sparticuz/chromium": "131.0.1",
+    "espeak-ng": "1.0.2",
+    "puppeteer-core": "^24.0.0"
   }
 }
