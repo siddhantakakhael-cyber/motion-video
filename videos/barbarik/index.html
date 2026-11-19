@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <title>बर्बरीक — महाभारत का असली विजेता</title>
+    <style>
+      /* ---------- type ---------- */
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-800-normal.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-700-normal.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-600-normal.woff2") format("woff2");
+        font-weight: 600;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-400-normal.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("../../assets/fonts/inter-latin-600-normal.woff2") format("woff2");
+        font-weight: 600;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("../../assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+
+      :root {
+        --ink: #07070b;
+        --bone: #f6efe4;
+        --muted: rgba(246, 239, 228, 0.62);
+        --gold: #e9b44c;
+        --gold-deep: #b4701f;
+        --ember: #c2410c;
+        --blood: #7f1d1d;
+        --safe-top: 360px;
+        --safe-bottom: 1420px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ink);
+        font-family: "Noto Deva", sans-serif;
+        color: var(--bone);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
+      }
+
+      #stage {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ink);
+      }
+
+      /* ---------- scenes ---------- */
+      .scene {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        will-change: opacity;
+      }
+
+      .art {
+        position: absolute;
+        inset: -6%;
+        transform-origin: center 45%;
+        will-change: transform;
+      }
+
+      .art img {
+        filter: brightness(0.84) saturate(1.06) contrast(1.05);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* keeps type readable over photography */
+      .scrim {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(70% 42% at 50% 48%, rgba(4, 4, 8, 0.74) 0%, rgba(4, 4, 8, 0.42) 55%, rgba(4, 4, 8, 0) 100%),
+          radial-gradient(120% 80% at 50% 30%, rgba(7, 7, 11, 0) 26%, rgba(7, 7, 11, 0.6) 70%, var(--ink) 100%),
+          linear-gradient(180deg, rgba(7, 7, 11, 0.9) 0%, rgba(7, 7, 11, 0.3) 36%, rgba(7, 7, 11, 0.62) 66%, rgba(7, 7, 11, 0.96) 90%);
+      }
+
+      .copy {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .eyebrow {
+        font-size: 31px;
+        font-weight: 700;
+        letter-spacing: 6px;
+        color: #ffd083;
+        text-shadow: 0 3px 16px rgba(0, 0, 0, 0.95), 0 0 26px rgba(0, 0, 0, 0.7);
+        opacity: 0;
+        margin-bottom: 34px;
+        text-transform: none;
+      }
+
+      .line {
+        font-size: 118px;
+        font-weight: 800;
+        line-height: 1.18;
+        letter-spacing: -1px;
+        opacity: 0;
+        will-change: transform, opacity;
+        text-shadow: 0 18px 60px rgba(0, 0, 0, 0.75);
+      }
+
+      .line.gold {
+        color: #f7c666;
+        text-shadow: 0 6px 26px rgba(0, 0, 0, 0.8), 0 0 46px rgba(233, 180, 76, 0.24);
+        filter: saturate(1.05);
+      }
+
+      .line.gold.shine {
+        background: linear-gradient(100deg, #ffe7b6 0%, #f8c96c 34%, #eda23c 58%, #ffdfa4 100%);
+        background-size: 220% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: none;
+        filter: drop-shadow(0 8px 26px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 40px rgba(240, 170, 60, 0.3));
+      }
+
+      .line.small {
+        font-size: 62px;
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: 0;
+        color: var(--muted);
+      }
+
+      .rule {
+        height: 5px;
+        width: 0;
+        margin-top: 44px;
+        border-radius: 3px;
+        background: linear-gradient(90deg, rgba(233, 180, 76, 0), var(--gold), rgba(233, 180, 76, 0));
+        opacity: 0.9;
+      }
+
+      .quote {
+        margin-top: 40px;
+        font-size: 54px;
+        font-weight: 600;
+        line-height: 1.42;
+        color: rgba(246, 239, 228, 0.86);
+        opacity: 0;
+      }
+
+      .quote i {
+        color: var(--gold);
+        font-style: normal;
+      }
+
+      .watermark {
+        position: absolute;
+        font-family: "Inter", sans-serif;
+        font-weight: 800;
+        color: rgba(233, 180, 76, 0.09);
+        line-height: 0.8;
+        letter-spacing: -0.04em;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ---------- hud ---------- */
+      .hud {
+        position: absolute;
+        top: 128px;
+        left: 96px;
+        right: 96px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 6;
+        opacity: 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 27px;
+        font-weight: 600;
+        letter-spacing: 3px;
+        color: rgba(246, 239, 228, 0.72);
+      }
+
+      .brand .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--gold);
+        box-shadow: 0 0 26px rgba(233, 180, 76, 0.9);
+      }
+
+      .counter {
+        font-family: "Inter", sans-serif;
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        color: rgba(246, 239, 228, 0.55);
+      }
+
+      .counter b {
+        color: var(--gold);
+        font-weight: 800;
+      }
+
+      .bar {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        bottom: 150px;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(246, 239, 228, 0.14);
+        overflow: hidden;
+        z-index: 6;
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--gold-deep), var(--gold));
+      }
+
+      /* ---------- texture ---------- */
+      .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 4;
+        background: radial-gradient(115% 75% at 50% 46%, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.62) 100%);
+      }
+
+      .grain {
+        position: absolute;
+        inset: -120px;
+        pointer-events: none;
+        z-index: 5;
+        opacity: 0.075;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+      }
+
+      .dust {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .dust i {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: rgba(255, 214, 138, 0.55);
+        box-shadow: 0 0 12px rgba(255, 196, 92, 0.55);
+      }
+
+      /* ---------- cta ---------- */
+      .cta .copy {
+        top: 46%;
+      }
+
+      .cta .handle {
+        margin-top: 26px;
+        font-size: 40px;
+        font-weight: 700;
+        letter-spacing: 4px;
+        color: var(--gold);
+        opacity: 0;
+      }
+
+      .cta .sub {
+        margin-top: 30px;
+        font-size: 30px;
+        font-weight: 400;
+        letter-spacing: 6px;
+        color: rgba(246, 239, 228, 0.5);
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <!-- 01 · hook -->
+      <section class="scene" id="s-hook">
+        <div class="art"><img src="media/s1.jpg" alt="" /></div>
+        <div class="scrim"></div>
+        <div class="copy">
+          <div class="eyebrow" data-fade="0.15">महाभारत · अंतिम रहस्य</div>
+          <div class="line" data-fade="0.35">असली विजेता</div>
+          <div class="line gold" data-fade="0.62">अर्जुन नहीं था</div>
+          <div class="rule" data-rule="0.95"></div>
+        </div>
+      </section>
+
+      <!-- 02 · three arrows -->
+      <section class="scene" id="s-arrows">
+        <div class="art"><img src="media/s2.jpg" alt="" /></div>
+        <div class="scrim"></div>
+        <div class="copy">
+          <div class="eyebrow" data-fade="0.15">भीम का पोता · बर्बरीक</div>
+          <div class="line" data-fade="0.35">सिर्फ <span class="line gold" style="display: inline">3</span> बाण</div>
+          <div class="line" data-fade="0.7">और पूरा युद्ध खत्म</div>
+          <div class="rule" data-rule="1.05"></div>
+        </div>
+      </section>
+
+      <!-- 03 · the sacrifice -->
+      <section class="scene" id="s-sacrifice">
+        <div class="art"><img src="media/s3.jpg" alt="" /></div>
+        <div class="scrim"></div>
+        <div class="copy">
+          <div class="eyebrow" data-fade="0.15">गुरु दक्षिणा</div>
+          <div class="line" data-fade="0.35">शीश का</div>
+          <div class="line gold" data-fade="0.6">महादान</div>
+          <div class="quote" data-fade="1.0">“<i>मैं पूरा युद्ध देखना चाहता हूँ…</i>”</div>
+        </div>
+      </section>
+
+      <!-- 04 · the question -->
+      <section class="scene" id="s-question">
+        <div class="art"><img src="media/s4.jpg" alt="" /></div>
+        <div class="scrim"></div>
+        <div class="copy">
+          <div class="eyebrow" data-fade="0.15">पांडवों का सवाल</div>
+          <div class="line" data-fade="0.35">तुमने युद्ध में</div>
+          <div class="line gold" data-fade="0.62">किसे लड़ते देखा?</div>
+          <div class="rule" data-rule="0.98"></div>
+        </div>
+      </section>
+
+      <!-- 05 · reveal -->
+      <section class="scene" id="s-reveal">
+        <div class="art"><img src="media/s5.jpg" alt="" /></div>
+        <div class="scrim"></div>
+        <div class="copy">
+          <div class="eyebrow" data-fade="0.15">बर्बरीक का उत्तर</div>
+          <div class="line" data-fade="0.4">असली विजेता…</div>
+          <div class="line gold shine" data-fade="0.85" style="font-size: 132px">स्वयं श्रीकृष्ण</div>
+          <div class="rule" data-rule="1.3"></div>
+        </div>
+      </section>
+
+      <!-- 06 · cta -->
+      <section class="scene cta" id="s-cta">
+        <div class="art"><img src="media/s1.jpg" alt="" /></div>
+        <div class="scrim"></div>
+        <div class="copy">
+          <div class="line gold shine" data-fade="0.12" style="font-size: 104px">फॉलो करें</div>
+          <div class="handle" data-fade="0.35">महाभारत रहस्य</div>
+          <div class="sub" data-fade="0.6">हर रहस्य · हर युग</div>
+        </div>
+      </section>
+
+      <div class="dust" id="dust"></div>
+      <div class="grain" id="grain"></div>
+      <div class="vignette"></div>
+
+      <header class="hud" id="hud">
+        <div class="brand"><span class="dot"></span>महाभारत रहस्य</div>
+        <div class="counter"><b id="sceneNum">01</b> / 05</div>
+      </header>
+
+      <div class="bar"><span id="barFill"></span></div>
+    </div>
+
+    <script src="timing.js"></script>
+    <script>
+      /**
+       * Every frame is a pure function of time: window.seek(t) sets the whole
+       * composition for second t. Nothing here uses CSS transitions, timers or
+       * requestAnimationFrame, so a still frame is always reproducible.
+       */
+      const T = window.TIMING;
+      const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+      const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+      const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+      const lerp = (a, b, k) => a + (b - a) * k;
+
+      const scenes = T.scenes;
+      const timeline = [
+        ...scenes.map((s, i) => ({ ...s, el: document.getElementById(["s-hook", "s-arrows", "s-sacrifice", "s-question", "s-reveal"][i]) })),
+        { id: "cta", start: T.cta.start, duration: T.cta.duration, el: document.getElementById("s-cta") },
+      ];
+
+      const hud = document.getElementById("hud");
+      const barFill = document.getElementById("barFill");
+      const grain = document.getElementById("grain");
+      const sceneNum = document.getElementById("sceneNum");
+
+      /* deterministic dust motes */
+      const dust = document.getElementById("dust");
+      const motes = Array.from({ length: 22 }, (_, i) => {
+        const seed = Math.sin(i * 127.1) * 43758.5453;
+        const r = seed - Math.floor(seed);
+        const el = document.createElement("i");
+        el.style.left = `${8 + r * 84}%`;
+        el.style.top = `${20 + ((i * 37) % 60)}%`;
+        el.style.opacity = String(0.18 + r * 0.5);
+        el.style.transform = `scale(${0.6 + r * 1.1})`;
+        dust.appendChild(el);
+        return { el, r, x: 8 + r * 84 };
+      });
+
+      function seek(time) {
+        const t = clamp(time, 0, T.duration);
+        const active = timeline.filter((s) => t >= s.start - 0.4).length;
+        if (sceneNum) sceneNum.textContent = String(Math.min(5, Math.max(1, active))).padStart(2, "0");
+
+        for (const scene of timeline) {
+          const local = t - scene.start;
+          const p = clamp(local / scene.duration);
+          const fadeIn = clamp(local / 0.5);
+          const isLast = scene === timeline[timeline.length - 1];
+          const fadeOut = isLast ? 1 : clamp((scene.duration - local) / 0.45);
+          scene.el.style.opacity = String(clamp(Math.min(fadeIn, fadeOut)));
+          if (local < -0.1 || local > scene.duration + 0.1) continue;
+
+          const art = scene.el.querySelector(".art");
+          if (art) {
+            const zoom = 1.06 + 0.12 * easeInOut(p);
+            const drift = -26 * easeInOut(p);
+            const punch = scene.id === "hook" ? 1 + 0.015 * Math.sin(t * 1.9) : 1;
+            art.style.transform = `translate3d(0, ${drift}px, 0) scale(${(zoom * punch).toFixed(4)})`;
+          }
+
+          for (const node of scene.el.querySelectorAll("[data-fade]")) {
+            const at = Number(node.dataset.fade);
+            const k = easeOut(clamp((local - at) / 0.55));
+            const rise = 46 * (1 - k);
+            node.style.opacity = String(k);
+            node.style.transform = `translate3d(0, ${rise.toFixed(2)}px, 0)`;
+          }
+
+          for (const rule of scene.el.querySelectorAll("[data-rule]")) {
+            const at = Number(rule.dataset.rule);
+            const k = easeOut(clamp((local - at) / 0.7));
+            rule.style.width = `${Math.round(220 * k)}px`;
+            rule.style.opacity = String(0.35 + 0.65 * k);
+          }
+
+          for (const mark of scene.el.querySelectorAll("[data-watermark]")) {
+            const k = clamp((local - 0.2) / 1.1);
+            mark.style.opacity = String(0.5 * k * (1 - 0.55 * p));
+            mark.style.transform = `scale(${(1.15 - 0.2 * easeOut(k)).toFixed(3)})`;
+          }
+
+          if (scene.id === "reveal") {
+            const gold = scene.el.querySelector(".line.gold");
+            if (gold) gold.style.backgroundPosition = `${Math.round(20 + 60 * p)}% 50%`;
+          }
+        }
+
+        hud.style.opacity = String(clamp((t - 0.25) / 0.6));
+        barFill.style.width = `${(t / T.duration) * 100}%`;
+
+        /* film grain + motes move one pixel-step per frame */
+        const step = Math.round(t * 30);
+        grain.style.transform = `translate(${-(step * 13) % 120}px, ${-(step * 29) % 120}px)`;
+        for (const mote of motes) {
+          const rise = ((t * (14 + mote.r * 26)) % 620) - 140;
+          const sway = Math.sin(t * 0.6 + mote.r * 6.28) * 24;
+          mote.el.style.transform = `translate3d(${sway}px, ${-rise}px, 0) scale(${0.6 + mote.r})`;
+          mote.el.style.opacity = String(clamp(0.1 + 0.4 * Math.sin(t * 0.9 + mote.r * 5)));
+        }
+      }
+
+      window.seek = seek;
+      window.READY = Promise.all([
+        document.fonts.ready,
+        ...Array.from(document.images).map((img) => (img.decode ? img.decode().catch(() => null) : null)),
+      ]).then(() => {
+        seek(0);
+        return true;
+      });
+      seek(0);
+    </script>
+  </body>
+</html>

@@ -1,66 +1,90 @@
-# Motion Studio
+# Motion graphics studio
 
-![Motion Studio](docs/screenshot.png)
+Every frame is code. A video in this repo is one HTML file that exposes `window.seek(seconds)`;
+headless Chromium draws each frame, ffmpeg encodes them, and the narration is synthesised on the
+machine. No After Effects, no timeline editor, no render service.
 
-**Live:** https://siddhantakakhael-cyber.github.io/motion-video/
+![Barbarik reveal](docs/poster.jpg)
 
-Prompt-to-video in the browser: paste a script, pick a look, and get a finished vertical video with
-an AI voiceover, generated music, timed cuts and burned-in captions — then download the MP4. No
-account, no API key, no server: the whole pipeline runs on the device.
+▶ **Watch:** [`videos/barbarik/out/barbarik-reel.mp4`](videos/barbarik/out/barbarik-reel.mp4)
+— 1080 × 1920, 30 fps, 56.8 s, Hindi voiceover, 13 MB.
 
-## What it does
+## The videos
 
-- **Script → storyboard.** The text is split into caption-sized scenes on punctuation and line
-  breaks. Each scene becomes a full-frame kinetic text card with safe-area layout, title card,
-  scene counter and end CTA.
-- **AI voiceover.** Every line is spoken by an on-device speech engine (meSpeak/eSpeak, lazily
-  loaded — no network, no key). Scenes are timed from the measured audio, so cuts land exactly on
-  the narration.
-- **Generated music.** A royalty-free backing bed is synthesised with WebAudio per look (calm,
-  warm, uplifting, tense), ducked under the voice.
-- **Four looks, four formats.** Bold, Cinematic, News and Neon; 9:16 Reel, 16:9 Wide, 1:1 Square and
-  4:5 Feed.
-- **One-click export.** Frames are drawn at full resolution, voice + music are mixed, and the result
-  is recorded in real time to MP4 (H.264+AAC where the browser has it, else VP9/Opus) or WebM.
-  Captions can be downloaded as `.srt`.
-- **Local by design.** Autosaves to `localStorage`, media in IndexedDB, nothing uploaded anywhere.
+| Video | Length | Size | What it is |
+| --- | --- | --- | --- |
+| [`barbarik`](videos/barbarik) | 56.8 s | 1080×1920 | Skanda Purana retelling: the real winner of the Mahabharat was not Arjuna. |
 
-## Run it
+## The skills
+
+The workflow comes from [charlie947/motion-graphics-skills](https://github.com/charlie947/motion-graphics-skills)
+(MIT), installed in [`.claude/skills/`](.claude/skills) — 15 skills for launch films, reels,
+animated charts, title sequences, brand intake and reel exports. `brand.md` and `MOTION.md` are the
+two files those skills ask for first, written for this channel.
+
+Read order for a new video: `brand-intake` → `motion-brief-writer` → `launch-video` or `loop-cover`
+→ `reel-export`.
+
+## Repository layout
+
+```
+.claude/skills/          the skill pack (15 skills + references)
+brand.md                 palette, type, voice, sign-off
+MOTION.md                the animation contract: timing, camera, texture, sound
+assets/fonts/            Noto Sans Devanagari + Inter (woff2, self-hosted)
+scripts/voice.mjs        narration (eSpeak-NG) + score + timing.js
+scripts/render.mjs       frames → H.264/AAC MP4
+scripts/poster.mjs       one still from any second
+videos/<slug>/
+  index.html             the whole animation, as window.seek(t)
+  script.json            narration text and voice settings
+  script.md              beat sheet, timings, sources
+  video.json             size, fps, audio path, output path
+  media/                 stills
+  audio/narration.wav    generated, mixed, ready for the mux
+  out/                   the MP4
+```
+
+## Build a video
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000
-npm run build && npm start   # production
+
+# 1. narration + score + timings (writes audio/narration.wav and timing.js)
+npm run voice -- videos/barbarik
+
+# 2. frames → MP4
+npm run render -- videos/barbarik
+
+# 3. a still, for thumbnails and README art
+npm run poster -- videos/barbarik 49 docs/poster.jpg
 ```
 
-Static hosting works too — every feature is client-side:
+`npm run build` does voice + render in one go.
 
-```bash
-STATIC_EXPORT=1 NEXT_PUBLIC_BASE_PATH=/motion-video npm run build   # → out/
-```
+### What you need
 
-`.github/workflows/deploy-pages.yml` publishes that output to GitHub Pages on every push to `main`.
+Node 20+, and nothing else that is not in `package.json`:
 
-## How the pipeline fits together
+- **Chromium** comes from `@sparticuz/chromium` and is unpacked into `.cache/` on first run.
+- **ffmpeg** comes from `@ffmpeg-installer/ffmpeg` (static build, includes libx264 and AAC).
+- **Voice** comes from `espeak-ng` compiled to WebAssembly — Hindi included, no API key, offline.
 
-| File | Job |
-| --- | --- |
-| `lib/ai.ts` | script → scenes → layers (title, captions, counters, CTA) |
-| `lib/tts.ts` | eSpeak engine, WAV parse/encode, per-line cache |
-| `lib/voiceover.ts` | speaks every line, trims silence, stitches one track, returns exact timings |
-| `lib/music.ts` | WebAudio backing bed per look |
-| `lib/render.ts` | canvas renderer (text, shapes, images, gradients, keyframes) |
-| `lib/export.ts` | MediaRecorder + WebAudio mix, MP4/WebM selection |
-| `lib/subs.ts` | caption cues → `.srt` / `.vtt` |
-| `components/Creator.tsx` | the whole UI: prompt, options, preview, download |
+Render speed is about 0.7 s per frame on a shared CPU, so a 57-second 30 fps reel takes ~19 minutes.
+Cut `fps` in `video.json` or lower `crf`/`maxrate` for drafts.
 
-## Limits
+## Adding a video
 
-- Export is a real-time capture: a 20 s video takes about 20 s. Keep the tab focused.
-- Codec support varies by browser; the download button labels the container you will actually get
-  (MP4 where the browser can mux it, otherwise WebM).
-- The bundled voice is an offline formant synth — clear and free, but robotic. Swap `lib/tts.ts`
-  for a cloud TTS (Ai Awaaz, ElevenLabs, OpenAI) to use a natural voice; the timing pipeline only
-  needs PCM, so cuts stay exact.
-- Music is generated, so it is simple by design; a real track can be mixed in by adding an audio
-  layer.
+1. Copy `videos/barbarik` to `videos/<slug>`.
+2. Replace `script.json` (narration, one entry per scene) and `media/`.
+3. Write `index.html`: keep the `window.seek(t)` contract, read `window.TIMING` for starts, hold
+   type inside y 360–1420.
+4. `npm run voice -- videos/<slug> && npm run render -- videos/<slug>`.
+
+The encoder rejects nothing by accident: `render.mjs` prints the final stream listing so you can
+check `h264`, `yuv420p`, `bt709` and the AAC track before uploading.
+
+## Licence
+
+Code MIT. Fonts: Noto Sans Devanagari and Inter (SIL OFL). Skills: MIT, © Charlie Hills.
+Imagery generated for this project.
