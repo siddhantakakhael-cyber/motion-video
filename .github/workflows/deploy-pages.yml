@@ -32,6 +32,9 @@ jobs:
       - uses: actions/configure-pages@v5
         with:
           enablement: true
+        # A token without Pages admin cannot create the site; the build and
+        # artifact upload should still succeed so a re-run can deploy.
+        continue-on-error: true
       - uses: actions/upload-pages-artifact@v4
         with:
           path: out
