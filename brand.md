@@ -1,48 +1,48 @@
-# brand.md
+# Brand
 
-Brand intake for this studio. Every video reads this file before it writes a frame.
+## Name and what we do
 
-## What this is
+**Rahasya Sutra Studio** — `@rahasyasutrastudio`. 50–60 second Hindi reels that retell the
+untold, suspenseful stories of the Ramayana, the Mahabharata and the Puranas. One story, one
+twist, one sutra at the end.
 
-A Hindu-mythology short-form channel. Reels that retell one story from the epics in under a
-minute, ending on the twist the audience did not know. Hindi narration, Devanagari type,
-cinematic stills, gold on black.
+## Audience
 
-## Palette
+Hindi-speaking viewers, 18–34, scrolling Instagram Reels at night. They know the epics broadly;
+they stay for the detail nobody told them. Sound usually off, phone at arm's length.
 
-| Token | Hex | Where |
-| --- | --- | --- |
-| Ink | `#07070B` | background, letterbox, every scrim ends here |
-| Bone | `#F6EFE4` | primary headline text |
-| Gold | `#E9B44C` | the second line of every headline, HUD accents, progress |
-| Gold light | `#FFD98A` | gradient start on climax lines |
-| Gold deep | `#B4701F` | progress bar start, hairlines |
-| Ember | `#C2410C` | sparingly, fear/sacrifice beat only |
-| Blood | `#7F1D1D` | never as a fill; only inside imagery |
+## What we promote (with the real link)
 
-Rules:
+The channel: [instagram.com/rahasyasutrastudio](https://instagram.com/rahasyasutrastudio) —
+follow for the next sutra. ASK ME for any lead magnet, newsletter or product before a CTA is written.
 
-- Two type colours on screen at once: bone + gold. A third colour is a bug.
-- Gold never sits on a bright gold image without a scrim behind it.
-- No pure `#FFFFFF`, no pure `#000000`. Ink and bone only.
+## The feeling
 
-## Type
+Suspense, dread, sacred. The quiet before a storm, then a hard cut. Never playful, never cheerful,
+never "content creator" energy.
 
-- **Devanagari:** Noto Sans Devanagari, weight 800 for headlines, 600/700 for eyebrows and quotes.
-- **Latin / numerals:** Inter 600/800, letter-spacing 2–7px for HUD labels.
-- Headline: 118px, line-height 1.18, tracking −1px, max two lines, centred.
-- Eyebrow: 31px, weight 700, tracking 6px, gold light.
-- Quote: 54px, weight 600, gold italics for the quoted line.
-- Nothing above y 360 or below y 1420 (Reels UI safe zone).
+## Assets
 
-## Voice
+Colours (from the brand brief):
 
-- Hindi, eSpeak-NG `hi` at 186 wpm, pitch 42 — fast and grave.
-- Sentence rhythm: setup, setup, twist. The twist lands in the last 8 seconds.
-- No "guys", no "subscribe", no exaggerated promises. "फॉलो करें" is the only CTA.
+- Pitch Black `#0A0A0A` — every stage, every scrim, every letterbox
+- Antique Gold `#D4AF37` — the sacred: chakra, mandala, rules, the word that matters
+- Crimson `#E50914` — danger, the twist, the reveal. Once per video.
+- Off-White `#F5F5F0` — headlines and subtitles
 
-## Sign-off
+Fonts:
 
-- Handle: **महाभारत रहस्य**, dot + gold, top-left, on every scene.
-- Counter: `01 / 05` Inter, top-right, gold numerals.
-- Progress hairline across the bottom above the caption safe zone.
+- Noto Sans Devanagari **800 / 900** — Hindi kinetic headlines (self-hosted in `assets/fonts/`)
+- Noto Sans Devanagari **500 / 600** — subtitles, quotes
+- Inter **800** — Latin handle, counters, numbers (ASK ME for a different Latin face)
+
+Logo: ASK ME — no file supplied yet. The kit draws a temporary lockup: gold chakra mark +
+`रहस्य सूत्र` wordmark (`brand/logo.svg`).
+
+## Never
+
+1. Purple-blue gradients, or any gradient that is not black, gold or crimson.
+2. Cheesy bounce, overshoot or spring easing.
+3. A blank, black or slow first frame — frame 0 must already carry a visual hook.
+4. Gore, blood, weapons striking bodies, or any violent act shown on screen.
+5. More than one crimson element on screen at a time.

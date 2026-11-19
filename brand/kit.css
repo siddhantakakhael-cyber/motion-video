@@ -1,0 +1,232 @@
+/* Rahasya Sutra Studio — motion kit
+   Tokens, stage, type and finish. Read MOTION.md before changing a value. */
+
+:root {
+  --ink: #0a0a0a;
+  --gold: #d4af37;
+  --crimson: #e50914;
+  --bone: #f5f5f0;
+
+  --gold-70: rgba(212, 175, 55, 0.7);
+  --gold-35: rgba(212, 175, 55, 0.35);
+  --gold-18: rgba(212, 175, 55, 0.18);
+  --gold-07: rgba(212, 175, 55, 0.07);
+  --bone-88: rgba(245, 245, 240, 0.88);
+  --bone-70: rgba(245, 245, 240, 0.7);
+  --bone-45: rgba(245, 245, 240, 0.45);
+
+  --safe-top: 360px;
+  --safe-bottom: 1420px;
+
+  --font-hi: "Noto Deva", "Noto Sans Devanagari", sans-serif;
+  --font-latin: "Inter", system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-hi);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+#stage {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--ink);
+  isolation: isolate;
+}
+
+/* every scene is a full-frame layer that the seek loop fades */
+.scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+/* ---------- type ---------- */
+.headline {
+  font-family: var(--font-hi);
+  font-weight: 800;
+  font-size: 128px;
+  line-height: 1.18;
+  letter-spacing: -1px;
+  color: var(--bone);
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.headline.gold {
+  color: var(--gold);
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 60px var(--gold-18);
+}
+
+.headline.crimson {
+  color: var(--crimson);
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 70px rgba(229, 9, 20, 0.22);
+}
+
+.sub {
+  font-family: var(--font-hi);
+  font-weight: 500;
+  font-size: 44px;
+  line-height: 1.45;
+  color: var(--bone-88);
+  opacity: 0;
+}
+
+.kicker {
+  font-family: var(--font-hi);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 6px;
+  color: var(--gold);
+  opacity: 0;
+}
+
+.handle {
+  font-family: var(--font-latin);
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: 3px;
+  color: var(--bone-70);
+  opacity: 0;
+}
+
+/* ---------- marks ---------- */
+.hairline {
+  height: 3px;
+  width: 0;
+  border-radius: 2px;
+  background: var(--gold);
+  box-shadow: 0 0 24px var(--gold-35);
+}
+
+.hairline.crimson {
+  background: var(--crimson);
+  box-shadow: 0 0 24px rgba(229, 9, 20, 0.35);
+}
+
+/* ---------- layers ---------- */
+.camera {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(52% 36% at 50% 38%, rgba(212, 175, 55, 0.16), rgba(212, 175, 55, 0.05) 46%, transparent 72%),
+    radial-gradient(80% 60% at 50% 100%, rgba(212, 175, 55, 0.07), transparent 70%);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background: radial-gradient(116% 76% at 50% 46%, transparent 44%, rgba(0, 0, 0, 0.62) 100%);
+}
+
+.grain {
+  position: absolute;
+  inset: -140px;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+}
+
+.dust {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.dust i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(226, 195, 110, 0.6);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.55);
+}
+
+/* ---------- hud ---------- */
+.hud {
+  position: absolute;
+  top: 126px;
+  left: 96px;
+  right: 96px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+}
+
+.hud .mark {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--bone-70);
+}
+
+.hud .mark span.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 22px var(--gold-70);
+}
+
+.hud .counter {
+  font-family: var(--font-latin);
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: var(--bone-45);
+}
+
+.hud .counter b {
+  color: var(--gold);
+}
+
+.progress {
+  position: absolute;
+  left: 96px;
+  right: 96px;
+  bottom: 148px;
+  height: 3px;
+  z-index: 10;
+  border-radius: 2px;
+  background: rgba(245, 245, 240, 0.13);
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.55), var(--gold));
+}
