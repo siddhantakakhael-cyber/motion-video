@@ -12,3 +12,5 @@ videos/*/audio/line*.wav
 # macOS
 .DS_Store
 videos/*/out/check*.png
+videos/*/out/m*.png
+videos/*/out/c*.png

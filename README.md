@@ -15,8 +15,9 @@ camera shake · `@rahasyasutrastudio`
 
 | Video | Length | What it is |
 | --- | --- | --- |
+| [`barbarik-vox`](videos/barbarik-vox/out/barbarik-vox.mp4) | 55.0 s | **Vox-style explainer.** Five acts, fixed windows (7 / 20 / 34 / 46 / 55 s), pure SVG: chakra, battlefield grid, three locking arrows, gold flash, moon on the cliff, split-screen emblems, particle reveal. Hindi VO. |
 | [`brand-ident`](videos/brand-ident/out/brand-ident.mp4) | 6.0 s | Channel ident: chakra spin, crimson hit, `रहस्य सूत्र` lockup, handle, tagline. |
-| [`barbarik`](videos/barbarik) | 56.8 s | Pre-brand cut (photo-led) — the Skanda Purana story of Barbarik. Kept for reference; it predates the vector kit in `MOTION.md` and is **not** a template. |
+| [`barbarik`](videos/barbarik) | 56.8 s | First cut (photo-led, pre-brand). Kept for reference only — not a template. |
 
 ## The brand system
 
@@ -62,7 +63,7 @@ CLAUDE.md           read-first rule for agents
 brand/              the kit: tokens, SVG primitives, logo
 assets/fonts/       Noto Sans Devanagari + Inter (woff2, self-hosted)
 scripts/            voice · render · score · poster
-videos/<slug>/      index.html (window.seek), script.json, script.md, media/, audio/, out/
+videos/<slug>/      index.html (window.seek), art.js (vector builders), script.json, script.md, audio/, out/
 ```
 
 ## Rules that ship with the brand

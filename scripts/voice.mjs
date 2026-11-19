@@ -22,6 +22,7 @@ const audioDir = path.join(dir, "audio");
 mkdirSync(audioDir, { recursive: true });
 
 const speed = spec.voice?.speed ?? 186;
+const fixed = spec.fixedDurations ?? null;
 const pitch = spec.voice?.pitch ?? 42;
 const voice = spec.voice?.voice ?? "hi";
 const gap = spec.gap ?? 0.24;
@@ -41,7 +42,9 @@ for (const [i, scene] of spec.scenes.entries()) {
 }
 
 const spoken = lines.reduce((n, l) => n + l.samples.length / l.sampleRate, 0) + gap * (lines.length - 1);
-const duration = Math.round((spoken + tail) * 100) / 100;
+const duration = fixed
+  ? Math.round(fixed.reduce((a, b) => a + b, 0) * 100) / 100
+  : Math.round((spoken + tail) * 100) / 100;
 const total = Math.round(duration * RATE);
 
 const voiceTrack = new Float32Array(total);
@@ -54,12 +57,17 @@ for (const [i, line] of lines.entries()) {
   // the last line gets no tail: the CTA card owns the tail, otherwise the two
   // cards would be on screen together and the type would collide
   const isLast = i === lines.length - 1;
+  const sceneLen = fixed ? fixed[i] : len + (isLast ? 0 : gap);
   scenes.push({
     id: line.id,
     start: Math.round(cursor * 100) / 100,
-    duration: Math.round((len + (isLast ? 0 : gap)) * 100) / 100,
+    duration: Math.round(sceneLen * 100) / 100,
+    speak: Math.round(len * 100) / 100,
   });
-  cursor += len + gap;
+  cursor += fixed ? sceneLen : len + gap;
+  if (fixed && len > sceneLen) {
+    console.warn(`  ! ${line.id}: narration ${len.toFixed(2)}s is longer than its ${sceneLen}s window`);
+  }
 }
 normalize(voiceTrack, 0.88);
 
@@ -112,7 +120,7 @@ const timing = {
   duration,
   fps: spec.fps ?? 30,
   scenes,
-  cta: { start: Math.round((duration - tail) * 100) / 100, duration: tail },
+  cta: fixed ? null : { start: Math.round((duration - tail) * 100) / 100, duration: tail },
   tail,
 };
 writeFileSync(path.join(dir, "timing.js"), `window.TIMING = ${JSON.stringify(timing, null, 1)};\n`);
