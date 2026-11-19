@@ -2,14 +2,17 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import ESpeakNg from "espeak-ng";
 import { RATE, fade, normalize, readWav, silence, trimSilence, writeWav } from "./lib/wav.mjs";
+import { buildAmbience } from "./lib/ambience.mjs";
 
 /**
  * Hindi narration + score for one video folder.
  *
  * espeak-ng (WASM) speaks every scene, the silence between lines is trimmed,
  * the lines are stitched with a fixed gap, and a D-minor drone with a low impact
- * on each cut is mixed underneath. Cut timings are written to timing.js so the
- * HTML scene code and the audio agree to the sample.
+ * on each cut is mixed underneath, together with a synthesised natural bed
+ * (wind, distant rumble, crickets, bell, conch, arrow whooshes) that is ducked
+ * by the voice. Cut timings are written to timing.js so the HTML scene code and
+ * the audio agree to the sample.
  */
 const dir = process.argv[2];
 if (!dir) {
@@ -105,8 +108,22 @@ for (const scene of scenes.slice(0, -1)) {
   }
 }
 
+/* ---- natural ambience: wind, rumble, crickets, bell, conch, arrows ---- */
+const ambience =
+  spec.ambience?.level === 0
+    ? null
+    : buildAmbience({
+        duration,
+        rate: RATE,
+        scenes: spec.scenes.map((sc, i) => ({ ...sc, ...scenes[i] })),
+        voice: voiceTrack,
+        level: spec.ambience?.level ?? 0.16,
+      });
+
 const mix = new Float32Array(total);
-for (let i = 0; i < total; i++) mix[i] = voiceTrack[i] + bed[i] * (spec.bed?.level ?? 0.13);
+for (let i = 0; i < total; i++) {
+  mix[i] = voiceTrack[i] + bed[i] * (spec.bed?.level ?? 0.13) + (ambience ? ambience[i] : 0);
+}
 const head = Math.round(0.12 * RATE);
 const edge = Math.round(0.5 * RATE);
 for (let i = 0; i < head; i++) mix[i] *= i / head;

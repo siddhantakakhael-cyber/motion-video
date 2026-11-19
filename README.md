@@ -43,7 +43,7 @@ Every video links both kit files and stays a pure function of time.
 ```bash
 npm install                     # Chromium + ffmpeg + eSpeak-NG, all offline
 
-npm run voice  -- videos/<slug> # Hindi narration (eSpeak-NG `hi`) + score + timing.js
+npm run voice  -- videos/<slug> # Hindi narration (eSpeak-NG `hi`) + score + ambience + timing.js
 npm run render -- videos/<slug> # frames → H.264 High / yuv420p / bt709 / AAC
 npm run poster -- videos/<slug> 3.2 docs/still.png
 node scripts/score.mjs out.wav 6.0 1.2 4.4   # music only (idents, no narration)
@@ -62,7 +62,7 @@ MOTION.md           the motion contract
 CLAUDE.md           read-first rule for agents
 brand/              the kit: tokens, SVG primitives, logo
 assets/fonts/       Noto Sans Devanagari + Inter (woff2, self-hosted)
-scripts/            voice · render · score · poster
+scripts/            voice · render · score · poster · lib/ambience (wind, rumble, crickets, bell, conch)
 videos/<slug>/      index.html (window.seek), art.js (vector builders), script.json, script.md, audio/, out/
 ```
 

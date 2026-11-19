@@ -1,7 +1,7 @@
 # बर्बरीक — असली विजेता (Vox-style explainer)
 
 **Source:** स्कंद पुराण (माहेश्वर खंड / कौमारिका खंड)
-**Format:** 1080 × 1920 · 30 fps · 55.0 s · Hindi narration · vector only
+**Format:** 1080 × 1920 · 30 fps · 55.0 s · Hindi narration + scored bed + natural ambience · vector only
 **Look:** pitch black, antique gold, one crimson accent, Noto Sans Devanagari 800
 
 ## Beat sheet (windows fixed to the brief)
@@ -31,9 +31,26 @@
 - No typewriter, no bounce, no purple/blue gradient, no violence — symbolic silhouettes only.
 - One crimson element in the whole video: the underline under the Pandavas' question.
 
+## Sound
+
+`scripts/voice.mjs` writes `audio/narration.wav` in three layers:
+
+1. **Voice** — eSpeak-NG `hi`, one line per scene, trimmed and faded.
+2. **Score** — a D-minor drone that breathes on slow LFOs, plus a low impact on every cut.
+3. **Ambience** (`scripts/lib/ambience.mjs`, level `0.45` in `script.json`) — all synthesised:
+   - night wind + air shimmer running the whole reel, breathing on 0.06/0.12 Hz LFOs
+   - distant battlefield rumble under the arrows and the sacrifice beats
+   - an arrow whoosh and string twang on each of the three locked arrows (7.7 / 9.4 / 11.2 s)
+   - temple bell on frame 0 and on the last frame
+   - conch swell at the aura (20.4 s), the flash (27.3 s) and the reveal (46.3 s)
+   - crickets trilling under the moon and the question, fading out before the final title
+
+   The bed is side-ducked 45% by the narration envelope, so the voice always wins and
+   the silence between lines still has a room around it.
+
 ## Rebuild
 
 ```bash
-node scripts/voice.mjs videos/barbarik-vox     # narration + score + timing.js
+node scripts/voice.mjs videos/barbarik-vox     # narration + score + ambience + timing.js
 node scripts/render.mjs videos/barbarik-vox    # 1650 frames → MP4
 ```
