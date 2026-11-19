@@ -14,3 +14,5 @@ videos/*/audio/line*.wav
 videos/*/out/check*.png
 videos/*/out/m*.png
 videos/*/out/c*.png
+videos/*/out/preview/
+videos/*/voices/

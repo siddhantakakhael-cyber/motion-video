@@ -1,4 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import ESpeakNg from "espeak-ng";
 import { RATE, fade, normalize, readWav, silence, trimSilence, writeWav } from "./lib/wav.mjs";
@@ -7,7 +8,8 @@ import { buildAmbience } from "./lib/ambience.mjs";
 /**
  * Hindi narration + score for one video folder.
  *
- * espeak-ng (WASM) speaks every scene, the silence between lines is trimmed,
+ * Either Piper (neural VITS, a .onnx voice from script.json) or espeak-ng (WASM)
+ * speaks every scene, the silence between lines is trimmed,
  * the lines are stitched with a fixed gap, and a D-minor drone with a low impact
  * on each cut is mixed underneath, together with a synthesised natural bed
  * (wind, distant rumble, crickets, bell, conch, arrow whooshes) that is ducked
@@ -31,17 +33,67 @@ const voice = spec.voice?.voice ?? "hi";
 const gap = spec.gap ?? 0.24;
 const tail = spec.tail ?? 2.2;
 
+/* ---- engine: Piper (neural) when a voice model is present, else espeak-ng ---- */
+const piperModel = (() => {
+  const m = spec.voice?.model ?? process.env.PIPER_MODEL ?? "";
+  if (!m) return "";
+  return path.isAbsolute(m) ? m : path.join(dir, m);
+})();
+const usePiper =
+  (spec.voice?.engine ?? "espeak") === "piper" &&
+  Boolean(piperModel) &&
+  existsSync(piperModel) &&
+  spawnSync("piper", ["--help"], { encoding: "utf8" }).status === 0;
+if ((spec.voice?.engine ?? "espeak") === "piper" && !usePiper) {
+  console.warn(`piper requested but ${piperModel || "no model"} is unavailable — falling back to espeak-ng`);
+}
+
+const trimTo = (file) => {
+  const { samples, sampleRate } = readWav(file);
+  return { samples: fade(trimSilence(samples, sampleRate), sampleRate, 25), sampleRate };
+};
+const synthPiper = (text, file, scale) => {
+  const res = spawnSync(
+    "piper",
+    ["-m", piperModel, "-f", file, "--length-scale", scale.toFixed(2), "--sentence-silence", "0.12"],
+    { input: `${text}\n`, encoding: "utf8" }
+  );
+  if (res.status !== 0) throw new Error(`piper failed: ${(res.stderr ?? "").slice(0, 300)}`);
+  return trimTo(file);
+};
+
 const lines = [];
 for (const [i, scene] of spec.scenes.entries()) {
-  const tmp = `/line${i}.wav`;
-  const engine = await ESpeakNg({
-    arguments: ["-v", voice, "-s", String(speed), "-p", String(pitch), "-w", tmp, scene.narration],
-  });
   const file = path.join(audioDir, `line${i}.wav`);
-  writeFileSync(file, Buffer.from(engine.FS.readFile(tmp)));
-  const { samples, sampleRate } = readWav(file);
-  const trimmed = fade(trimSilence(samples, sampleRate), sampleRate, 25);
-  lines.push({ id: scene.id, samples: trimmed, sampleRate });
+  if (usePiper) {
+    // Piper's durations wobble a little per run, so each line is retried faster
+    // until it fits its scene window with room to breathe.
+    const budget = fixed ? fixed[i] - (scene.margin ?? 0.5) : Infinity;
+    let scale = scene.lengthScale ?? spec.voice?.lengthScale ?? 0.95;
+    let out = synthPiper(scene.narration, file, scale);
+    let dur = out.samples.length / out.sampleRate;
+    if (dur > budget) {
+      // Piper's duration tracks length-scale almost linearly, so jump straight to
+      // the scale that fits instead of walking down from the default — that keeps
+      // the read as slow as the scene window allows.
+      scale = Math.max(0.72, Math.min(0.98, (scale * budget) / dur * 0.99));
+      for (let tries = 0; tries < 6; tries++) {
+        out = synthPiper(scene.narration, file, scale);
+        dur = out.samples.length / out.sampleRate;
+        if (dur <= budget) break;
+        scale = Math.max(0.72, scale - 0.02);
+      }
+    }
+    lines.push({ id: scene.id, ...out, scale });
+    console.log(`  ${scene.id.padEnd(10)} piper · ${dur.toFixed(2)}s / ${fixed ? fixed[i] : "?"}s · length-scale ${scale.toFixed(2)}`);
+  } else {
+    const tmp = `/line${i}.wav`;
+    const engine = await ESpeakNg({
+      arguments: ["-v", voice, "-s", String(speed), "-p", String(pitch), "-w", tmp, scene.narration],
+    });
+    writeFileSync(file, Buffer.from(engine.FS.readFile(tmp)));
+    lines.push({ id: scene.id, ...trimTo(file) });
+  }
 }
 
 const spoken = lines.reduce((n, l) => n + l.samples.length / l.sampleRate, 0) + gap * (lines.length - 1);

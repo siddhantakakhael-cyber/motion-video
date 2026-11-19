@@ -2,7 +2,10 @@
   "voice": {
     "voice": "hi",
     "speed": 186,
-    "pitch": 42
+    "pitch": 42,
+    "engine": "piper",
+    "model": "voices/hi_IN-pratham-medium.onnx",
+    "lengthScale": 0.95
   },
   "fixedDurations": [
     7,
@@ -18,7 +21,7 @@
   "scenes": [
     {
       "id": "hook",
-      "narration": "महाभारत के अठारह दिन के महायुद्ध में करोड़ों योद्धा लड़े। पर असली विजेता न अर्जुन था, न भीम, न कर्ण।",
+      "narration": "महाभारत के अठारह दिन के महायुद्ध में करोड़ों योद्धा लड़े। पर असली विजेता अर्जुन नहीं था।",
       "ambience": 0.6
     },
     {
