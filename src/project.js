@@ -12,7 +12,7 @@ export const STYLES = [
   { id: 'caption', name: 'Caption Cuts', hi: 'कैप्शन कट्स', family: 'Edit & Documentary', accent: '#FF3B30', blurb: 'Hard-cut kinetic words for talking-head hooks.' },
   { id: 'mythic', name: 'Mythic Epic', hi: 'पौराणिक', family: 'Epic & Lore', accent: '#E10600', blurb: 'Blood-red dust, gold, cracks in the earth and a curse that lands on the beat.' },
   { id: 'cartoon', name: 'Cartoon Epic', hi: 'कार्टून', family: 'Cartoons', accent: '#FF6B2C', blurb: 'Bright 2D cartoon: full characters, faces, scenery, comic bursts and motion lines.' },
-  { id: 'epic', name: 'Kurukshetra Epic', hi: 'युद्ध सिनेमा', family: 'Cinematic & Mythic', accent: '#D9A441', blurb: 'Cinematic war plates, slow push-ins, gold type and a clearly divine Mother Earth.' },
+  { id: 'epic', name: 'Animated Kurukshetra Epic', hi: 'एनिमेटेड युद्ध', family: 'Animated & Cinematic', accent: '#D9A441', blurb: 'Three-frame action cycles, crossfades, moving dust/ghee/cracks/arrows and a clearly divine Mother Earth.' },
 ];
 
 export const SIZES = {
@@ -76,7 +76,7 @@ export const PRESETS = [
     },
   },
   {
-    id: 'karna', label: 'कर्ण का श्राप · War Epic (58s)',
+    id: 'karna', label: 'कर्ण का श्राप · Animated (58s)',
     project: {
       title: 'कर्ण का छिपा श्राप', handle: '@mahabharata.reels',
       style: 'epic', accent: '#D9A441', size: 'reel-hd',

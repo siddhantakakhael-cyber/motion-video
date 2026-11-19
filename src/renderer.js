@@ -1,7 +1,7 @@
 // The film itself. One deterministic function: drawFrame(g, W, H, t, project).
-// Camera moves, grading, typography and SFX are drawn in code; the featured
-// Kurukshetra Epic style composites five generated cinematic plates. The same
-// module runs in the browser (live preview) and in Node (frame-by-frame export).
+// Camera moves, frame crossfades, grading, typography, particles and SFX are
+// drawn in code; the featured Animated Epic style blends fifteen generated
+// animation frames. The same module runs in browser preview and Node export.
 
 import {
   clamp, lerp, seg, ss, eio, eo, ei, back, hash, mulberry, TAU,
@@ -9,7 +9,7 @@ import {
   drawFitted, roundRect, line, lineGrow, dot, arrow,
 } from './lib.js';
 import { normalizeProject, timeline, atTime, STYLES } from './project.js';
-import { getSceneImage } from './sceneImages.js';
+import { getSceneFrames } from './sceneImages.js';
 
 const TEXT_IN = 0.46;
 const TEXT_OUT = 0.34;
@@ -1086,8 +1086,8 @@ function cartoon(ctx) {
 }
 
 
-// ------------------------------------------------------- 9. KURUKSHETRA EPIC ---
-// Cinematic generated plates + code-drawn camera moves, grading, captions, SFX.
+// -------------------------------------------------- 9. ANIMATED KURUKSHETRA ---
+// 3-frame action cycles + crossfades + code-drawn motion layers, captions, SFX.
 const E_GOLD = '#D9A441', E_CREAM = '#FFF3D6', E_INK = '#120A07', E_RED = '#B22A1A';
 
 function epicFallback(ctx, visual) {
@@ -1103,22 +1103,35 @@ function epicFallback(ctx, visual) {
   g.beginPath(); g.arc(W * 0.5, H * 0.72, W * 0.28, 0, TAU); g.stroke();
 }
 
-function epicPlate(ctx, visual, p) {
+function drawEpicImage(ctx, img, p, alpha = 1) {
   const { g, W, H } = ctx;
-  const img = getSceneImage(visual) || getSceneImage('wheel');
-  if (!img) { epicFallback(ctx, visual); return; }
+  if (!img) return;
   const iw = Number(img.width || img.naturalWidth || W);
   const ih = Number(img.height || img.naturalHeight || H);
   const zoom = 1.035 + 0.085 * eio(clamp(p));
   const scale = Math.max(W / iw, H / ih) * zoom;
   const dw = iw * scale, dh = ih * scale;
   const maxX = Math.max(0, (dw - W) / 2), maxY = Math.max(0, (dh - H) / 2);
-  const dir = visual === 'curse' ? -1 : visual === 'arrow' ? 1 : 0.5;
+  const dir = ctx.A.scene?.visual === 'curse' ? -1 : ctx.A.scene?.visual === 'arrow' ? 1 : 0.5;
   const panX = dir * Math.sin(p * Math.PI) * 0.28;
-  const panY = (visual === 'squeeze' ? -0.18 : 0.10) * Math.sin(p * Math.PI);
+  const panY = (ctx.A.scene?.visual === 'squeeze' ? -0.18 : 0.10) * Math.sin(p * Math.PI);
   const dx = -maxX + clamp(panX, -1, 1) * maxX;
   const dy = -maxY + clamp(panY, -1, 1) * maxY;
+  g.save(); g.globalAlpha *= clamp(alpha);
   g.drawImage(img, dx, dy, dw, dh);
+  g.restore();
+}
+
+function epicPlate(ctx, visual, p) {
+  const frames = getSceneFrames(visual);
+  if (!frames.length) { epicFallback(ctx, visual); return; }
+  // Three-frame action cycle: hold, crossfade, hold. This is real frame-to-frame
+  // animation rather than a single still with a camera move.
+  const x = clamp(p) * Math.max(0, frames.length - 1);
+  const i = Math.min(frames.length - 1, Math.floor(x));
+  const f = eio(clamp(x - i));
+  drawEpicImage(ctx, frames[i], p, 1);
+  if (i + 1 < frames.length && f > 0.001) drawEpicImage(ctx, frames[i + 1], p, f);
 }
 
 function epicGrade(ctx) {
@@ -1148,6 +1161,71 @@ function epicParticles(ctx) {
     g.fillStyle = `rgba(255,218,138,${(0.045 + rand() * 0.13).toFixed(3)})`;
     g.beginPath(); g.arc(x, y, size, 0, TAU); g.fill();
   }
+  g.restore();
+}
+
+function epicMotion(ctx, visual, p) {
+  const { g, W, H, u, A, t } = ctx;
+  const pulse = 0.5 + 0.5 * Math.sin(t * 5.2);
+  g.save();
+
+  if (visual === 'wheel' || visual === 'arrow') {
+    // Earth cracks grow under the trapped wheel.
+    const cx = W * 0.50, cy = H * 0.745;
+    for (let i = 0; i < 6; i++) {
+      const a = -Math.PI / 2 + (i - 2.5) * 0.30;
+      const len = W * (0.10 + 0.24 * eio(p)) * (0.72 + hash(i * 3.1) * 0.5);
+      g.strokeStyle = `rgba(174,58,26,${(0.18 + 0.28 * p).toFixed(3)})`;
+      g.lineWidth = (2.2 + hash(i) * 1.8) * u;
+      g.beginPath(); g.moveTo(cx, cy);
+      g.lineTo(cx + Math.cos(a) * len * 0.45, cy + Math.sin(a) * len * 0.18);
+      g.lineTo(cx + Math.cos(a) * len, cy + Math.sin(a) * len * 0.32);
+      g.stroke();
+    }
+    // Expanding dust rings.
+    for (let i = 0; i < 5; i++) {
+      const r = W * (0.10 + ((p * 1.8 + i * 0.21) % 1) * 0.26);
+      g.strokeStyle = `rgba(255,213,142,${(0.12 * (1 - ((p * 1.8 + i * 0.21) % 1))).toFixed(3)})`;
+      g.lineWidth = 3 * u;
+      g.beginPath(); g.ellipse(cx, cy, r, r * 0.30, 0, 0, TAU); g.stroke();
+    }
+  }
+
+  if (visual === 'ghee' || visual === 'squeeze') {
+    // Moving ghee droplets and a pulsing stream between soil and pot.
+    const top = visual === 'squeeze' ? H * 0.34 : H * 0.62;
+    const bottom = visual === 'squeeze' ? H * 0.66 : H * 0.76;
+    for (let i = 0; i < 11; i++) {
+      const phase = (p * 2.4 + i / 11) % 1;
+      const x = W * (0.48 + (hash(i * 7.7) - 0.5) * 0.14);
+      const y = lerp(top, bottom, phase);
+      g.fillStyle = `rgba(255,205,86,${(0.48 * (1 - phase)).toFixed(3)})`;
+      g.beginPath(); g.ellipse(x, y, (2.5 + hash(i) * 2.5) * u, (5 + hash(i * 2) * 5) * u, 0, 0, TAU); g.fill();
+    }
+    g.strokeStyle = `rgba(255,214,116,${(0.22 + 0.16 * pulse).toFixed(3)})`;
+    g.lineWidth = 6 * u; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(W * 0.50, top);
+    g.quadraticCurveTo(W * (0.49 + 0.015 * Math.sin(t * 3)), (top + bottom) / 2, W * 0.50, bottom);
+    g.stroke();
+  }
+
+  if (visual === 'curse') {
+    // Divine halo breathing + cracks radiating from the earth.
+    const halo = g.createRadialGradient(W * 0.5, H * 0.36, 0, W * 0.5, H * 0.36, W * 0.38);
+    halo.addColorStop(0, `rgba(255,218,126,${(0.10 + 0.12 * pulse).toFixed(3)})`);
+    halo.addColorStop(1, 'rgba(255,218,126,0)');
+    g.fillStyle = halo; g.fillRect(0, 0, W, H);
+    for (let i = 0; i < 8; i++) {
+      const a = Math.PI / 2 + (i - 3.5) * 0.24;
+      const len = H * (0.06 + 0.14 * eio(p)) * (0.7 + hash(i * 5.3) * 0.6);
+      g.strokeStyle = `rgba(92,40,18,${(0.24 + 0.28 * p).toFixed(3)})`;
+      g.lineWidth = 3 * u;
+      g.beginPath(); g.moveTo(W * 0.5, H * 0.79);
+      g.lineTo(W * 0.5 + Math.cos(a) * len, H * 0.79 + Math.sin(a) * len);
+      g.stroke();
+    }
+  }
+
   g.restore();
 }
 
@@ -1196,6 +1274,7 @@ function epic(ctx) {
   epicPlate(ctx, visual, p);
   epicGrade(ctx);
   epicParticles(ctx);
+  epicMotion(ctx, visual, p);
   if (visual === 'arrow') epicArrowStreak(ctx, p);
 
   // Top kicker: small and restrained, so the plate stays visible.

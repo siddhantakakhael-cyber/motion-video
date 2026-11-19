@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { normalizeProject } from './project.js';
 import { drawFrame } from './renderer.js';
 import { scorePCM, pcmToWav } from './score.js';
-import { setSceneImage, SCENE_IMAGE_FILES } from './sceneImages.js';
+import { setSceneFrames, SCENE_IMAGE_FILES } from './sceneImages.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FONT_DIR = join(HERE, '..', 'public', 'fonts');
@@ -23,12 +23,16 @@ const SCENE_DIR = join(HERE, '..', 'public', 'assets', 'scenes');
 let sceneImagesReady = false;
 export async function registerSceneImages() {
   if (sceneImagesReady) return;
-  for (const [key, file] of Object.entries(SCENE_IMAGE_FILES)) {
-    const p = join(SCENE_DIR, file);
-    if (existsSync(p)) {
-      try { setSceneImage(key, await loadImage(p)); }
-      catch (e) { console.warn(`could not load scene plate ${file}:`, e.message || e); }
+  for (const [key, files] of Object.entries(SCENE_IMAGE_FILES)) {
+    const loaded = [];
+    for (const file of files) {
+      const p = join(SCENE_DIR, file);
+      if (existsSync(p)) {
+        try { loaded.push(await loadImage(p)); }
+        catch (e) { console.warn(`could not load animation frame ${file}:`, e.message || e); }
+      }
     }
+    setSceneFrames(key, loaded);
   }
   sceneImagesReady = true;
 }

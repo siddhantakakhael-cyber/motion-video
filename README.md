@@ -1,10 +1,10 @@
 # Motion Reels · Instagram videos made in code
 
-Write a script, pick a film style, and export a **9:16 MP4 for Instagram Reels** — every frame is composited and graded in code with a 2D canvas, then encoded with ffmpeg and a synthesised soundtrack. No video model, no stock footage, no runtime API keys; the featured Karna film uses five pre-generated cinematic plates.
+Write a script, pick a film style, and export a **9:16 MP4 for Instagram Reels** — every frame is composited and graded in code with a 2D canvas, then encoded with ffmpeg and a synthesised soundtrack. No video model, no stock footage, no runtime API keys; the featured Karna film uses fifteen pre-generated animation frames.
 
 Built with the [lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar) idea as inspiration: *a film style is a drawing program plus a set of invariants*. This repository is a fresh, browser-first implementation for short vertical social videos — it does not copy that project's demo films, style prompts or assets.
 
-**Featured build:** a complete **58-second Hindi Reel, “कर्ण का छिपा श्राप”** — 5 shots with exact 0/7/20/35/48/58 timings, now in a **cinematic Kurukshetra Epic** treatment with a real war horizon, chariots, armies, arrows, the sinking golden wheel, spilled ghee, and **Bhūdevī as a clearly feminine earth goddess**. Code-drawn camera moves, gold typography, grading and SFX sit over five pre-generated 9:16 plates. Hindi voiceover in two voices stays synced to 0:00 / 0:28 / 0:42 / 0:50. See `public/samples/karna-reel.mp4` and the [Karna section](#the-karna-reel-58s).
+**Featured build:** a complete **58-second Hindi Reel, “कर्ण का छिपा श्राप”** — 5 shots with exact 0/7/20/35/48/58 timings, now in an **Animated Kurukshetra Epic** treatment with a real war horizon, chariots, armies, arrows, the sinking golden wheel, spilled ghee, and **Bhūdevī as a clearly feminine earth goddess**. Each shot blends a **3-frame action cycle** — fifteen generated 9:16 frames total — with crossfades, slow push-ins, code-drawn dust/ghee droplets/growing cracks/flying arrows, gold typography, grading and SFX. Hindi voiceover in two voices stays synced to 0:00 / 0:28 / 0:42 / 0:50. See `public/samples/karna-reel.mp4` and the [Karna section](#the-karna-reel-58s).
 
 ---
 
@@ -38,7 +38,7 @@ To rebuild the featured 58s film: `npm run karna`.
 
 | | |
 |---|---|
-| **9 film styles** | Swiss Grid, Neon Tubes, Dark Keynote, Blueprint, Riso Print, Caption Cuts, Mythic Epic, Cartoon Epic, **Kurukshetra Epic** |
+| **9 film styles** | Swiss Grid, Neon Tubes, Dark Keynote, Blueprint, Riso Print, Caption Cuts, Mythic Epic, Cartoon Epic, **Animated Kurukshetra Epic** |
 | **Script → shot list** | One line per shot, `Heading | Detail | visualCue`; intro/end card are generated automatically (and can be set to zero length) |
 | **Variable timings** | `sceneDurations: [7,13,15,13,10]` for a 58-second story, or the equal-shots slider |
 | **Live preview** | The *same* `drawFrame()` used by the exporter, with play/pause, scrubbing and a shot timeline |
@@ -47,7 +47,7 @@ To rebuild the featured 58s film: `npm run karna`.
 | **Procedural score + SFX** | Kick, hat, bass, pad, whooshes, sub-drop, earth-crush, thunder and arrow — all written straight into PCM |
 | **Voiceover mixing** | Pre-rendered WAV clips are tempo-fitted to each shot and mixed under the score (`scripts/render-karna.js`) |
 | **Deterministic export** | Frame-by-frame RGBA → `libx264` H.264 + AAC, `yuv420p`, `+faststart`, 30 fps |
-| **Cinematic plates** | The Epic style composites five pre-generated 9:16 stills with code-drawn motion and captions |
+| **Animated frames** | The Epic style blends three generated frames per shot (15 total) with crossfades and code-drawn motion layers |
 | **Cover frame** | Download any previewed frame as a PNG poster |
 | **Hindi + English** | Devanagari text uses a bundled Noto Sans Devanagari; UI hints are bilingual |
 | **CLI** | Render any project JSON without opening the browser |
@@ -109,13 +109,13 @@ Five MP4s are already included in `public/samples/`: the Karna curse film, Swiss
 Implementation notes:
 
 * `intro: 0` and `outro: 0` remove the generated title/end cards, so the five windows start exactly at `0, 7, 20, 35, 48` and end at `58`.
-* Each scene carries a `visual` cue. `src/renderer.js` → `epic()` selects one of five pre-generated plates from `public/assets/scenes/` by cue, then adds a slow push-in, warm grade, dust, gold caption boxes and the arrow streak. A hard `\n` in the hook heading drives the two-beat reveal.
+* Each scene carries a `visual` cue. `src/renderer.js` → `epic()` blends its three-frame action cycle from `public/assets/scenes/` with crossfades, then adds a slow push-in, warm grade, animated dust, ghee droplets, growing cracks, gold caption boxes and the arrow streak. A hard `\n` in the hook heading drives the two-beat reveal.
 * The score is ducked to 30% under the voice. Seven Hindi WAV clips in `assets/voice/` are placed at `0.35, 7.35, 20.35, 23.65, 35.35, 39.6, 48.35`; four are lightly `atempo`-fitted so they never spill into the next shot (see the printed `end` times from `npm run karna`).
 * `scripts/render-karna.js` mixes voice + `scorePCM()` + `addSfx()` into `karna-audio.wav`, then calls the normal `renderProject()` with `audioWav` so the video and audio share one timeline. SFX: sub-drop/creak at `0:00`, earth-crush at `0:28`, thunder + glitch at `0:42`, arrow at `0:50`.
 * Output: `public/samples/karna-reel.mp4` (58.03s, 1080×1920, H.264 + AAC), `karna-poster.png` (44s), and the standalone `karna-audio.wav`.
 * One short clause in the third voiceover line is worded gently (“घर जाने का डर था”) because the exact phrasing was blocked by speech content moderation; the on-screen story text and the rest of the voiceover follow the supplied brief.
 
-To edit the story, change `examples/karna-reel.json` and run `npm run karna`. To use the same look for a different story, pick **Kurukshetra Epic** in the studio (or the **कर्ण का श्राप · War Epic** preset) and set your own shot lengths.
+To edit the story, change `examples/karna-reel.json` and run `npm run karna`. To use the same look for a different story, pick **Animated Kurukshetra Epic** in the studio (or the **कर्ण का श्राप · Animated** preset) and set your own shot lengths.
 
 ---
 
@@ -180,7 +180,7 @@ src/lib.js                easing, colour, fitted text helpers
 src/renderer.js           nine style drawing programs (incl. epic)
 src/score.js              procedural score, SFX + WAV writer
 src/render.js             Node canvas → ffmpeg pipeline (accepts a mixed WAV)
-public/                   index.html, CSS, app.js, fonts, 5 sample MP4s, 5 Epic scene plates
+public/                   index.html, CSS, app.js, fonts, 5 sample MP4s, 15 Epic animation frames
 scripts/render.js         generic CLI renderer
 scripts/render-karna.js   voice + score + SFX mix → Karna MP4
 examples/                 project JSON examples (incl. karna-reel.json)
@@ -195,8 +195,8 @@ assets/voice/             seven pre-rendered Hindi voiceover WAVs
 * Rendering: [`@napi-rs/canvas`](https://www.npmjs.com/package/@napi-rs/canvas), [`@ffmpeg-installer/ffmpeg`](https://www.npmjs.com/package/@ffmpeg-installer/ffmpeg).
 * Fonts: Inter, Noto Sans Devanagari (SIL OFL 1.1), DejaVu Sans Mono (DejaVu / Bitstream Vera). Details in `public/fonts/CREDITS.md`.
 * Hindi voiceover: pre-rendered WAV clips with two selected voices (narrator + Bhūdevī); no external TTS service is called at render time.
-* Cinematic plates: five original generated 9:16 stills in `public/assets/scenes/`; no third-party film stills or stock footage are used.
-* Everything else in this repository — app, styles, score, SFX, drawings, generated plates and sample reels — is original to this build. The videos you export are yours to use. The Mahābhārata story text is traditional/public-domain material retold here.
+* Animation frames: fifteen original generated 9:16 frames — three per shot — in `public/assets/scenes/`; no third-party film stills or stock footage are used.
+* Everything else in this repository — app, styles, score, SFX, drawings, generated animation frames and sample reels — is original to this build. The videos you export are yours to use. The Mahābhārata story text is traditional/public-domain material retold here.
 
 ---
 

@@ -4,7 +4,7 @@ import {
 import { drawFrame } from '/src/renderer.js';
 import { scorePCM, pcmToWav } from '/src/score.js';
 import { complement } from '/src/lib.js';
-import { setSceneImage, SCENE_IMAGE_FILES } from '/src/sceneImages.js';
+import { setSceneFrames, SCENE_IMAGE_FILES } from '/src/sceneImages.js';
 
 const $ = id => document.getElementById(id);
 const SWATCHES = ['#E30613', '#FF5A00', '#22E6C8', '#7C6BFF', '#FF4E7A', '#FFC42E', '#67D9FF', '#39D6A5'];
@@ -340,13 +340,16 @@ function bindEvents() {
 // ----------------------------------------------------------- scene plates ---
 async function preloadSceneImages() {
   if (typeof Image === 'undefined') return;
-  const loads = Object.entries(SCENE_IMAGE_FILES).map(([key, file]) => new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => { setSceneImage(key, img); resolve(); };
-    img.onerror = () => resolve();
-    img.src = `/assets/scenes/${file}`;
-  }));
-  await Promise.race([Promise.all(loads), new Promise(r => setTimeout(r, 2000))]);
+  const loads = Object.entries(SCENE_IMAGE_FILES).map(async ([key, files]) => {
+    const loaded = await Promise.all(files.map(file => new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = `/assets/scenes/${file}`;
+    })));
+    setSceneFrames(key, loaded.filter(Boolean));
+  });
+  await Promise.race([Promise.all(loads), new Promise(r => setTimeout(r, 2500))]);
 }
 
 // ------------------------------------------------------------------- init ---
