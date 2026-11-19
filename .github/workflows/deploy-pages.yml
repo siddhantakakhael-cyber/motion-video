@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, "arena/6b5ca26e-motion-video"]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
