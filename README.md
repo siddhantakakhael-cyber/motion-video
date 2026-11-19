@@ -2,6 +2,8 @@
 
 ![Motion Studio editor](docs/screenshot.png)
 
+**Live demo:** https://siddhantakakhael-cyber.github.io/motion-video/
+
 A motion-graphics video editor that runs entirely in the browser. Paste a script, get an
 animated storyboard, fine-tune every layer on a real timeline, then record a finished MP4/WebM —
 no uploads, no render server, no account.
