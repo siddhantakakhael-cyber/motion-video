@@ -23,9 +23,15 @@ media and projects stay on-device in IndexedDB + localStorage.
 ## What it does
 
 **AI Director (on-device).** Paste a script and pick a style — *Bold*, *Cinematic*, *News* or
-*Neon*. The director splits the copy into caption-sized scenes, times each one from its word count
-at your chosen pace, lays out the safe areas, adds a title card, scene counter and end CTA, and
-puts everything on the timeline as ordinary, editable layers. Replacing the timeline is undoable.
+*Neon*. The director splits the copy into caption-sized scenes, lays out the safe areas, adds a
+title card, scene counter and end CTA, and puts everything on the timeline as ordinary, editable
+layers. Replacing the timeline is undoable.
+
+**AI voiceover + auto cuts.** With *AI voiceover* on, every scene is spoken by an on-device speech
+engine (meSpeak/eSpeak — no API key, no network, works offline). The generated audio is measured
+line by line, so scene lengths and cut points come from the real narration instead of a word-count
+guess: each caption appears exactly as its line starts. The voice lands on the timeline as a normal
+audio layer you can trim, move or mute, and the whole mix is baked into the export.
 
 **Timeline.** One track per layer, top = front. Drag clips to move (with snapping to clip edges,
 the playhead and the project end), drag edges to trim, and double-click to jump. Hide, lock,
@@ -52,6 +58,9 @@ thing is recorded in real time at up to 18 Mbps. Pick a container in the export 
 (H.264 + AAC where the browser has it, otherwise VP9/Opus in an MP4 wrapper) or WebM
 (VP9/VP8 + Opus). The dialog shows the exact codec pair before you render, and the file downloads
 straight to your machine.
+
+**Captions.** Caption layers double as subtitles: the export dialog downloads them as
+`.srt` or `.vtt`, timed to the same cuts the video uses (and they are burned in already).
 
 **Editing niceties.** 60-step undo/redo, debounced autosave with a saved indicator, project menu
 (new blank canvas, demo storyboard, clear timeline), keyboard shortcuts and a first-run demo reel.
@@ -99,6 +108,10 @@ lib/starter.ts       First-run demo project
   roughly 30 s to render — keep the tab focused while recording.
 - Output codec is whatever the browser can mux, and the export dialog labels it honestly: H.264 +
   AAC where available, otherwise VP9/Opus (MP4 or WebM). Firefox typically offers WebM only.
+- The bundled voice is an offline formant synth (eSpeak): clear and free, but robotic. Swap in a
+  neural engine or a cloud TTS key by replacing `lib/tts.ts` — the timing pipeline only needs PCM.
+- Caption timing with the voiceover on follows the audio, so changing the pace slider re-times the
+  cuts when you generate again.
 - The AI Director is a deterministic, local director (script analysis + layout heuristics), not a
   cloud LLM — it works offline, costs nothing and never sends your script anywhere.
 - Projects reference media by ID; deleting a file from the Media tab leaves existing layers intact

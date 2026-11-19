@@ -13,6 +13,13 @@ export interface GenerateOptions {
   includeCTA: boolean;
   ctaText: string;
   wpm: number;
+  /**
+   * Exact scene lengths, in order. Supplied when the narration has already
+   * measured itself, so every cut lands where the voice starts the next line.
+   */
+  sceneDurations?: number[];
+  /** Where the first scene starts — the title card length when there is one. */
+  titleLead?: number;
 }
 
 interface Theme {
@@ -339,6 +346,12 @@ export function splitScript(script: string): string[] {
   return chunks.filter((c) => c.trim().length > 0);
 }
 
+/** The scene texts a script turns into — shared by the director and the narrator. */
+export function scriptScenes(script: string): string[] {
+  const chunks = splitScript(script);
+  return chunks.length ? chunks : ["Paste your script in the AI panel to build a storyboard."];
+}
+
 function estimateDuration(text: string, wpm: number) {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(MIN_SCENE, (words / wpm) * 60 + 0.55);
@@ -366,20 +379,18 @@ export function generateStoryboard(opts: GenerateOptions): Project {
   const { w, h } = ASPECTS[opts.aspect];
   const theme = THEMES[opts.style];
   const wpm = Math.min(220, Math.max(90, opts.wpm || WORDS_PER_MIN));
-  const chunks = splitScript(opts.script);
-  const source = chunks.length
-    ? chunks
-    : ["Paste your script in the AI panel to build a storyboard."];
+  const source = scriptScenes(opts.script);
 
   const titleDur = 2.6;
   const ctaDur = 3.2;
-  let cursor = opts.includeTitle ? titleDur + 0.25 : 0;
+  let cursor = opts.titleLead ?? (opts.includeTitle ? titleDur + 0.25 : 0);
   const placements: { text: string; start: number; duration: number }[] = [];
-  for (const chunk of source) {
-    const d = estimateDuration(chunk, wpm);
+  source.forEach((chunk, i) => {
+    const measured = opts.sceneDurations?.[i];
+    const d = measured && measured > 0.2 ? measured : estimateDuration(chunk, wpm);
     placements.push({ text: chunk, start: Math.round(cursor * 100) / 100, duration: Math.round(d * 100) / 100 });
     cursor += d + 0.08;
-  }
+  });
   const ctaStart = Math.round(cursor * 100) / 100;
   const total = Math.round((opts.includeCTA ? ctaStart + ctaDur : cursor) * 10) / 10;
   const autoTitle = opts.title?.trim() || sentenceTitle(source[0] ?? "New story", 34);
