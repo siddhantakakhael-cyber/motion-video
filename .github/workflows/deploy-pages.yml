@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - run: npm ci
       - name: Build static export
@@ -29,6 +29,8 @@ jobs:
         env:
           STATIC_EXPORT: "1"
           NEXT_PUBLIC_BASE_PATH: /motion-video
+      - name: Stamp the deployed commit
+        run: echo "$GITHUB_SHA" > out/deployed-commit.txt
       - uses: actions/configure-pages@v5
         with:
           enablement: true
