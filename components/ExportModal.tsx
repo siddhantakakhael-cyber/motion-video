@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { download, safeName } from "@/lib/project";
+import { captionCues, toSrt, toVtt } from "@/lib/subs";
 import { availableFormats, exportVideo, type FormatPref } from "@/lib/export";
 import { useStudio } from "@/lib/store";
 import { useUI } from "@/lib/ui";
@@ -34,6 +35,13 @@ export default function ExportModal() {
   const formats = availableFormats();
   const current = formats.find((f) => f.value === format) ?? formats[0];
   const ext = current.ext;
+  const cues = captionCues(project);
+  const saveCaptions = (kind: "srt" | "vtt") => {
+    const text = kind === "srt" ? toSrt(cues) : toVtt(cues);
+    const blob = new Blob([text], { type: kind === "srt" ? "application/x-subrip" : "text/vtt" });
+    download(blob, `${safeName(filename || project.name)}.${kind}`);
+    toast("Captions exported", `${cues.length} lines · ${kind.toUpperCase()}`, "success");
+  };
   const audioCount = project.layers.filter((l) => l.type === "audio" && l.audioUrl && !l.hidden).length;
   const scaleNum = Number(scale);
   const outW = Math.round(project.width * scaleNum);
@@ -152,6 +160,35 @@ export default function ExportModal() {
                 <p className="text-[10px] leading-relaxed text-zinc-600">
                   {current.label} · {current.detail}
                 </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-zinc-500">
+                    Captions
+                  </p>
+                  <span className="text-[10px] text-zinc-600">{cues.length} lines</span>
+                </div>
+                {cues.length ? (
+                  <>
+                    <div className="flex gap-2">
+                      <Button variant="default" size="sm" className="flex-1" onClick={() => saveCaptions("srt")}>
+                        Download .srt
+                      </Button>
+                      <Button variant="default" size="sm" className="flex-1" onClick={() => saveCaptions("vtt")}>
+                        Download .vtt
+                      </Button>
+                    </div>
+                    <p className="text-[10px] leading-relaxed text-zinc-600">
+                      Captions are burned in and timed to the narration — these files are extras for
+                      YouTube, Reels and Shorts.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-[10px] leading-relaxed text-zinc-600">
+                    No caption layers yet. Generate a storyboard and they appear here.
+                  </p>
+                )}
               </div>
 
               <label className="block space-y-1.5">

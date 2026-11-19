@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { generateStoryboard, SCRIPT_SAMPLES, splitScript } from "@/lib/ai";
+import { generateStoryboard, SCRIPT_SAMPLES, scriptScenes, splitScript } from "@/lib/ai";
+import { makeAudio } from "@/lib/project";
+import { saveMediaFile } from "@/lib/media";
+import { narrate } from "@/lib/voiceover";
 import { STARTER_SCRIPT } from "@/lib/starter";
 import { useStudio } from "@/lib/store";
 import { SCENE_STYLES, type AspectId, type SceneStyle } from "@/lib/types";
@@ -34,7 +37,10 @@ export default function AIPanel() {
   const [includeTitle, setIncludeTitle] = useState(true);
   const [includeCTA, setIncludeCTA] = useState(true);
   const [wpm, setWpm] = useState(150);
+  const [voiceOn, setVoiceOn] = useState(true);
+  const [voicePace, setVoicePace] = useState(1);
   const [busy, setBusy] = useState(false);
+  const [stage, setStage] = useState("Directing…");
   const scriptRef = useRef("");
 
   useEffect(() => {
@@ -52,6 +58,8 @@ export default function AIPanel() {
           includeTitle: boolean;
           includeCTA: boolean;
           wpm: number;
+          voiceOn: boolean;
+          voicePace: number;
         }>;
         if (saved.style) setStyle(saved.style);
         if (saved.title !== undefined) setTitle(saved.title);
@@ -60,6 +68,8 @@ export default function AIPanel() {
         if (saved.includeTitle !== undefined) setIncludeTitle(saved.includeTitle);
         if (saved.includeCTA !== undefined) setIncludeCTA(saved.includeCTA);
         if (saved.wpm) setWpm(saved.wpm);
+        if (saved.voiceOn !== undefined) setVoiceOn(saved.voiceOn);
+        if (saved.voicePace) setVoicePace(saved.voicePace);
       }
     } catch {
       /* storage unavailable */
@@ -68,11 +78,14 @@ export default function AIPanel() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(OPTIONS_KEY, JSON.stringify({ style, title, brand, ctaText, includeTitle, includeCTA, wpm }));
+      localStorage.setItem(
+        OPTIONS_KEY,
+        JSON.stringify({ style, title, brand, ctaText, includeTitle, includeCTA, wpm, voiceOn, voicePace })
+      );
     } catch {
       /* noop */
     }
-  }, [style, title, brand, ctaText, includeTitle, includeCTA, wpm]);
+  }, [style, title, brand, ctaText, includeTitle, includeCTA, wpm, voiceOn, voicePace]);
 
   useEffect(() => {
     scriptRef.current = script;
@@ -117,13 +130,34 @@ export default function AIPanel() {
       ? "4:5"
       : "9:16";
 
-  const generate = () => {
-    if (!script.trim()) {
-      toast("Add a script first", "Paste a few lines — one idea per line works best.", "error");
+  const generate = async () => {
+    if (!script.trim() || busy) {
+      if (!script.trim()) toast("Add a script first", "Paste a few lines — one idea per line works best.", "error");
       return;
     }
     setBusy(true);
     try {
+      const scenes = scriptScenes(script);
+      const lead = includeTitle ? 2.6 : 0;
+
+      let narration: Awaited<ReturnType<typeof narrate>> = null;
+      if (voiceOn) {
+        setStage("Narrating 0/" + scenes.length);
+        narration = await narrate(scenes, {
+          speed: Math.round(168 * voicePace),
+          lead,
+          // the director adds its own 0.08s gap between scenes, so the pause
+          // here is 0.16s: caption length + 0.08 always lands on the next line
+          gap: 0.16,
+          tail: 0.3,
+          onProgress: (done, total) => setStage(`Narrating ${Math.min(done, total)}/${total}`),
+        });
+        if (!narration) {
+          toast("Voice engine unavailable", "Falling back to estimated scene timing.", "error");
+        }
+      }
+
+      setStage("Directing…");
       const next = generateStoryboard({
         script,
         style,
@@ -134,18 +168,47 @@ export default function AIPanel() {
         includeCTA,
         ctaText,
         wpm,
+        sceneDurations: narration ? narration.lines.map((l) => Math.round((l.duration + 0.08) * 100) / 100) : undefined,
+        titleLead: narration ? lead : undefined,
       });
       setProject(next);
+
+      if (narration) {
+        const file = new File([narration.blob], "ai-voiceover.wav", { type: "audio/wav" });
+        const item = await saveMediaFile(file, "audio");
+        const store = useStudio.getState();
+        store.addMedia(item);
+        store.addLayer(
+          makeAudio(item.url, "AI voiceover", {
+            mediaId: item.id,
+            start: 0,
+            duration: Math.ceil(narration.duration * 10) / 10,
+            volume: 1,
+            role: "voice",
+          }),
+          false,
+          "top"
+        );
+      }
+
       const headline =
         next.layers.find((l) => l.role === "headline") ?? next.layers.find((l) => l.role === "caption");
       seek(headline ? Math.min(0.55, headline.start + 0.4) : 0);
       if (headline) select(headline.id);
-      const scenes = next.layers.filter((l) => l.role === "caption").length;
-      toast("Storyboard generated", `${scenes} scenes · ${next.duration.toFixed(1)}s · fully editable`, "success");
+
+      const count = next.layers.filter((l) => l.role === "caption").length;
+      toast(
+        narration ? "Storyboard + voiceover ready" : "Storyboard generated",
+        narration
+          ? `${count} scenes · ${next.duration.toFixed(1)}s · cuts follow the narration`
+          : `${count} scenes · ${next.duration.toFixed(1)}s · fully editable`,
+        "success"
+      );
     } catch (err) {
       toast("Could not generate", err instanceof Error ? err.message : "Unknown error", "error");
     } finally {
       setBusy(false);
+      setStage("Directing…");
     }
   };
 
@@ -180,7 +243,8 @@ export default function AIPanel() {
 
         <div className="flex items-center justify-between text-[10px] text-zinc-500">
           <span>
-            {stats.words} words · {stats.chunks} scenes · ~{stats.seconds}s
+            {stats.words} words · {stats.chunks} scenes ·{" "}
+            {voiceOn ? "cuts timed by the voice" : `~${stats.seconds}s`}
           </span>
           {script ? (
             <button onClick={() => setScript("")} className="text-zinc-600 hover:text-zinc-300">
@@ -258,12 +322,30 @@ export default function AIPanel() {
           </div>
         </div>
 
-        <Field label={`Narration pace · ${wpm} wpm`}>
-          <Slider value={wpm} min={100} max={210} step={5} onChange={setWpm} />
-        </Field>
-        <p className="-mt-1 text-[10px] text-zinc-600">
-          Slower pace keeps each caption on screen longer. 140–160 matches most social voiceovers.
-        </p>
+        <div className="space-y-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+          <div className="flex items-center justify-between">
+            <Toggle checked={voiceOn} onChange={setVoiceOn} label="AI voiceover" />
+            <span className="rounded-full bg-violet-500/10 px-1.5 py-0.5 text-[9px] font-medium text-violet-200 ring-1 ring-violet-400/20">
+              on-device
+            </span>
+          </div>
+          {voiceOn ? (
+            <>
+              <Slider value={voicePace} min={0.85} max={1.3} step={0.05} onChange={setVoicePace} />
+              <p className="text-[10px] leading-relaxed text-zinc-600">
+                Pace ×{voicePace.toFixed(2)}. The script is spoken line by line and the cuts are
+                trimmed to the real audio, so every caption change lands on the voice.
+              </p>
+            </>
+          ) : (
+            <>
+              <Slider value={wpm} min={100} max={210} step={5} onChange={setWpm} />
+              <p className="text-[10px] leading-relaxed text-zinc-600">
+                {wpm} wpm estimate. Turn the voiceover on to time cuts from real narration audio.
+              </p>
+            </>
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-2">
           <div>
@@ -289,7 +371,7 @@ export default function AIPanel() {
           disabled={busy || !script.trim()}
         >
           <IconSparkles width={15} height={15} />
-          {busy ? "Directing…" : "Generate storyboard"}
+          {busy ? stage : "Generate storyboard"}
         </Button>
         <p className="-mt-1 text-center text-[10px] leading-relaxed text-zinc-600">
           Replaces the current timeline — <kbd className="rounded bg-white/5 px-1 font-mono">⌘Z</kbd> brings
@@ -304,7 +386,8 @@ export default function AIPanel() {
           </li>
           <li className="flex gap-2">
             <span className="mt-[3px] h-1 w-1 shrink-0 rounded-full bg-violet-400" />
-            Scene duration comes from word count and your chosen pace.
+            With the voiceover on, each scene is measured from its own audio so cuts sit on the
+            sentence — otherwise word count and pace estimate it.
           </li>
           <li className="flex gap-2">
             <span className="mt-[3px] h-1 w-1 shrink-0 rounded-full bg-violet-400" />
