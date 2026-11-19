@@ -1,0 +1,10 @@
+{
+  "title": "Barbarik \u2014 the real winner (Vox-style explainer)",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "audio": "audio/narration.wav",
+  "out": "out/barbarik-vox.mp4",
+  "crf": 22,
+  "maxrate": "6M"
+}

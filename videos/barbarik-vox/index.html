@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <title>बर्बरीक — असली विजेता (Vox-style explainer)</title>
+    <link rel="stylesheet" href="../../brand/kit.css" />
+    <style>
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-800-normal.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-700-normal.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-600-normal.woff2") format("woff2");
+        font-weight: 600;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("../../assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("../../assets/fonts/inter-latin-600-normal.woff2") format("woff2");
+        font-weight: 600;
+        font-display: block;
+      }
+
+      .art {
+        position: absolute;
+        inset: 0;
+        transform-origin: 50% 58%;
+        will-change: transform;
+      }
+
+      .copy {
+        position: absolute;
+        left: 92px;
+        right: 92px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .copy .line {
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      /* ---------- scene 1 ---------- */
+      #s1 .copy {
+        top: 690px;
+      }
+      #s1 .kicker {
+        margin-bottom: 26px;
+      }
+
+      /* ---------- scene 2 ---------- */
+      #s2 .copy {
+        top: 1176px;
+      }
+
+      /* ---------- scene 3 ---------- */
+      #s3 .copy {
+        top: 1088px;
+      }
+      #s3 .quote-line {
+        opacity: 0;
+        margin-top: 30px;
+        font-size: 40px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: var(--gold);
+      }
+
+      /* ---------- scene 4 ---------- */
+      #s4 .copy {
+        top: 1170px;
+      }
+      #s4 .crimson-rule {
+        position: absolute;
+        top: 1128px;
+        left: 50%;
+        height: 3px;
+        width: 0;
+        margin-left: 0;
+        background: var(--crimson);
+        box-shadow: 0 0 26px rgba(229, 9, 20, 0.45);
+      }
+      .panel-label {
+        position: absolute;
+        top: 448px;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 5px;
+        color: var(--bone-70);
+        opacity: 0;
+      }
+      .panel-label.left {
+        left: 64px;
+      }
+      .panel-label.right {
+        right: 64px;
+        text-align: right;
+      }
+
+      /* ---------- scene 5 ---------- */
+      #s5 .copy {
+        top: 1178px;
+      }
+
+      .annotation {
+        position: absolute;
+        font-family: var(--font-hi);
+        font-weight: 600;
+        font-size: 24px;
+        letter-spacing: 1px;
+        color: var(--bone-45);
+        opacity: 0;
+      }
+      .annotation.latin {
+        font-family: var(--font-latin);
+        font-size: 20px;
+        letter-spacing: 2.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="camera" id="camera">
+        <!-- 01 -->
+        <section class="scene" id="s1">
+          <div class="art" id="art1"></div>
+          <div class="copy">
+            <div class="kicker line" data-fade="0.5">महाभारत · अंतिम सत्य</div>
+            <div class="headline line" data-fade="0.95" style="font-size: 112px">असली विजेता</div>
+            <div class="headline gold line" data-fade="1.45" style="font-size: 112px">अर्जुन नहीं था!</div>
+            <div class="annotation" data-fade="2.2" style="position: relative; margin-top: 24px">
+              18 दिन · 18 अक्षौहिणी सेना
+            </div>
+          </div>
+        </section>
+
+        <!-- 02 -->
+        <section class="scene" id="s2">
+          <div class="art" id="art2"></div>
+          <div class="copy">
+            <div class="kicker line" data-fade="0.35">कुरुक्षेत्र · तीन बाण</div>
+            <div class="annotation latin line" data-fade="1.9" style="position: absolute; top: -596px; left: 0">
+              03 ARROWS · ONE FIELD
+            </div>
+            <div class="headline line" data-fade="0.75" style="font-size: 92px; margin-top: 22px">
+              सिर्फ <span style="color: var(--gold); font-weight: 800;-webkit-text-stroke:0">3</span> बाण...
+            </div>
+            <div class="headline gold line" data-fade="1.35" style="font-size: 92px">और पूरा युद्ध खत्म!</div>
+          </div>
+        </section>
+
+        <!-- 03 -->
+        <section class="scene" id="s3">
+          <div class="art" id="art3"></div>
+          <div class="copy">
+            <div class="headline line" data-fade="0.35" style="font-size: 84px">शीश का</div>
+            <div class="headline gold line" data-fade="0.8" style="font-size: 104px">महादान</div>
+            <div class="quote-line line" data-fade="3.6">“मैं पूरा युद्ध देखना चाहता हूँ…”</div>
+          </div>
+        </section>
+
+        <!-- 04 -->
+        <section class="scene" id="s4">
+          <div class="art" id="art4"></div>
+          <div class="panel-label left" data-fade="0.5">पांडव</div>
+          <div class="panel-label right" data-fade="0.5">बर्बरीक</div>
+          <div class="crimson-rule" id="crimsonRule"></div>
+          <div class="copy">
+            <div class="headline line" data-fade="1.1" style="font-size: 92px">“तुमने युद्ध में</div>
+            <div class="headline gold line" data-fade="1.6" style="font-size: 92px">किसे लड़ते देखा?”</div>
+          </div>
+        </section>
+
+        <!-- 05 -->
+        <section class="scene" id="s5">
+          <div class="art" id="art5"></div>
+          <div class="copy">
+            <div class="headline line" data-fade="0.3" style="font-size: 84px">असली विजेता...</div>
+            <div class="headline gold line" data-fade="0.85" style="font-size: 108px">स्वयं श्रीकृष्ण!</div>
+            <div class="kicker line" data-fade="1.9" style="margin-top: 30px">@rahasyasutrastudio</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="dust" id="dust"></div>
+      <div class="grain" id="grain"></div>
+      <div class="vignette"></div>
+
+      <header class="hud" id="hud">
+        <div class="mark"><span class="dot"></span>रहस्य सूत्र</div>
+        <div class="counter"><b id="sceneNum">01</b> / 05</div>
+      </header>
+
+      <div class="progress"><span id="barFill"></span></div>
+    </div>
+
+    <script src="../../brand/kit.js"></script>
+    <script src="art.js"></script>
+    <script src="timing.js"></script>
+    <script>
+      const B = window.Brand;
+      const T = window.TIMING;
+      const clamp = B.clamp;
+
+      const camera = document.getElementById("camera");
+      const hud = document.getElementById("hud");
+      const barFill = document.getElementById("barFill");
+      const grain = document.getElementById("grain");
+      const sceneNum = document.getElementById("sceneNum");
+      const crimsonRule = document.getElementById("crimsonRule");
+      const updateDust = B.dust(document.getElementById("dust"), 24, 5);
+
+      const ids = ["s1", "s2", "s3", "s4", "s5"];
+      const builders = [Art.hook, Art.arrows, Art.sacrifice, Art.question, Art.reveal];
+
+      const scenes = T.scenes.map((data, i) => {
+        const el = document.getElementById(ids[i]);
+        const artHost = document.getElementById(`art${i + 1}`);
+        return {
+          data,
+          el,
+          art: builders[i](artHost),
+          copy: Array.from(el.querySelectorAll("[data-fade]")),
+          start: data.start,
+          duration: data.duration,
+        };
+      });
+
+      const last = scenes[scenes.length - 1];
+      const HITS = scenes.slice(1).map((s, i) => ({
+        at: s.start,
+        amp: i === scenes.length - 2 ? 16 : 11,
+        decay: 0.11,
+        rot: i === scenes.length - 2 ? 0.45 : 0.3,
+        seed: i + 2,
+      }));
+
+      function seek(time) {
+        const t = clamp(time, 0, T.duration);
+
+        /* camera: one impulse per cut, never continuous */
+        const s = B.shake(t, HITS);
+        camera.style.transform = `translate3d(${s.x.toFixed(2)}px, ${s.y.toFixed(2)}px, 0) rotate(${s.rot.toFixed(3)}deg) scale(1.03)`;
+
+        scenes.forEach((scene, i) => {
+          const local = t - scene.start;
+          const p = clamp(local / scene.duration);
+          /* the incoming scene reaches full opacity BEFORE its start, so a cut
+             crossfades into a live frame instead of dipping through black */
+          const fadeIn = clamp((local + 0.42) / 0.42);
+          const fadeOut = scene === last ? 1 : clamp((scene.duration - local) / 0.38);
+          scene.el.style.opacity = String(clamp(Math.min(fadeIn, fadeOut)));
+
+          if (local > -0.45 && local <= scene.duration + 0.1) {
+            /* 0.3s of pre-roll so the cut lands on a live, already-drawn frame */
+            scene.art.update(Math.max(0, local + 0.3), p);
+            /* parallax: the art creeps up and in while the type holds still */
+            const host = scene.el.querySelector(".art");
+            host.style.transform = `translate3d(0, ${(-10 * p).toFixed(2)}px, 0) scale(${(1.015 + 0.045 * p).toFixed(4)})`;
+
+            for (const node of scene.copy) {
+              const at = Number(node.dataset.fade);
+              const k = B.easeOutExpo(clamp((local - at) / 0.5));
+              node.style.opacity = String(k);
+              node.style.transform = `translate3d(0, ${(34 * (1 - k)).toFixed(2)}px, 0)`;
+            }
+          }
+
+          if (i === 3) {
+            /* the one crimson element in the video: the accusation underline */
+            const k = B.easeOutExpo(clamp((local - 1.35) / 0.7));
+            crimsonRule.style.width = `${(300 * k).toFixed(1)}px`;
+            crimsonRule.style.marginLeft = `${(-150 * k).toFixed(1)}px`;
+            crimsonRule.style.opacity = String(k);
+          }
+
+          if (local > -0.02 && local < scene.duration && i > 0) {
+            sceneNum.textContent = String(i + 1).padStart(2, "0");
+          }
+        });
+
+        hud.style.opacity = String(clamp((t - 0.3) / 0.5));
+        barFill.style.width = `${((t / T.duration) * 100).toFixed(2)}%`;
+
+        updateDust(t);
+        const step = Math.round(t * 30);
+        grain.style.transform = `translate(${-(step * 17) % 120}px, ${-(step * 29) % 120}px)`;
+      }
+
+      window.seek = seek;
+      window.READY = Promise.all([
+        document.fonts.ready,
+        ...Array.from(document.images).map((img) => (img.decode ? img.decode().catch(() => null) : null)),
+      ]).then(() => {
+        seek(0);
+        return true;
+      });
+      seek(0);
+    </script>
+  </body>
+</html>
