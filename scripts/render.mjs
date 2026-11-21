@@ -31,7 +31,7 @@ try {
   page.on("console", (m) => {
     if (m.type() === "error") console.error("console:", m.text().slice(0, 200));
   });
-  await page.goto(`http://127.0.0.1:${server.port}/${dir}/index.html`, { waitUntil: "networkidle0" });
+  await page.goto(`http://127.0.0.1:39835/${dir}/index.html`, { waitUntil: "networkidle0" });
   await page.evaluate(() => document.fonts.ready);
   const ready = await page
     .waitForFunction(() => window.TIMING && typeof window.seek === "function", { timeout: 15000 })

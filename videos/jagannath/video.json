@@ -1,0 +1,9 @@
+{
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "audio": "audio/narration.mp3",
+  "out": "out/jagannath.mp4",
+  "crf": 22,
+  "maxrate": "9M"
+}
