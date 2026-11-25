@@ -1,0 +1,48 @@
+{
+  "voice": {
+    "voice": "hi",
+    "speed": 186,
+    "pitch": 42
+  },
+  "fixedDurations": [
+    8,
+    11,
+    17,
+    3,
+    13
+  ],
+  "bed": {
+    "level": 0.13
+  },
+  "fps": 30,
+  "scenes": [
+    {
+      "id": "hook",
+      "narration": "रामायण का सबसे बड़ा रहस्य, युद्ध में नहीं — एक मौन में।",
+      "ambience": 0.6
+    },
+    {
+      "id": "truth",
+      "narration": "सीता अग्नि में खड़ी रहीं, लंका जीतने के बाद भी।",
+      "ambience": 0.7
+    },
+    {
+      "id": "exile",
+      "narration": "सीता ने वनवास स्वीकार किया, पर आखिरी इच्छा अपनी रखी।",
+      "ambience": 0.55
+    },
+    {
+      "id": "satya",
+      "narration": "सत्य।",
+      "ambience": 0.9
+    },
+    {
+      "id": "cta",
+      "narration": "फॉलो करें रहस्य सूत्र स्टूडियो।",
+      "ambience": 0.4
+    }
+  ],
+  "ambience": {
+    "level": 0.45
+  }
+}

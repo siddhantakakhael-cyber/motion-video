@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <title>रामायण · वह रात — Rahasya Sutra Studio</title>
+    <link rel="stylesheet" href="../../brand/kit.css" />
+    <style>
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-800-normal.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Noto Deva";
+        src: url("../../assets/fonts/noto-sans-devanagari-devanagari-600-normal.woff2") format("woff2");
+        font-weight: 600;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("../../assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+
+      #mark {
+        position: absolute;
+        left: 50%;
+        top: 560px;
+        width: 800px;
+        height: 800px;
+        margin-left: -400px;
+        margin-top: -400px;
+        opacity: 0;
+      }
+
+      #room {
+        position: absolute;
+        left: 50%;
+        top: 900px;
+        width: 1500px;
+        height: 1500px;
+        margin-left: -750px;
+        margin-top: -750px;
+        opacity: 0;
+      }
+
+      #glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(60% 40% at 50% 35%, rgba(212, 175, 55, 0.14), rgba(212, 175, 55, 0.04) 48%, transparent 70%);
+      }
+
+      /* kicker */
+      #kicker {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        top: 380px;
+        font-family: var(--font-hi);
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: 6px;
+        color: var(--gold);
+        text-align: center;
+        text-shadow: none;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      /* headlines: centred, max two lines, inside y 360–1420 */
+      .headline {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        top: 640px;
+        font-family: var(--font-hi);
+        font-weight: 800;
+        font-size: 128px;
+        line-height: 1.18;
+        letter-spacing: -1px;
+        text-align: center;
+        color: var(--bone);
+        text-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      .headline.gold {
+        color: var(--gold);
+        text-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 60px var(--gold-18);
+      }
+
+      /* subtitle band at y 1240 */
+      #sub {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        top: 1200px;
+        font-family: var(--font-hi);
+        font-weight: 600;
+        font-size: 44px;
+        line-height: 1.45;
+        color: var(--bone-88);
+        text-align: center;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      /* crimson reveal word — one element only */
+      #crimson {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        top: 780px;
+        font-family: var(--font-hi);
+        font-weight: 900;
+        font-size: 136px;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        color: var(--crimson);
+        text-align: center;
+        text-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 70px rgba(229, 9, 20, 0.22);
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      #crimsonRule {
+        position: absolute;
+        left: 50%;
+        top: 940px;
+        height: 3px;
+        width: 0;
+        margin-left: 0;
+        background: var(--crimson);
+        box-shadow: 0 0 24px rgba(229, 9, 20, 0.35);
+        opacity: 0;
+      }
+
+      /* CTA card — its own card, its own time */
+      #cta {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        top: 1000px;
+        font-family: var(--font-hi);
+        font-weight: 900;
+        font-size: 48px;
+        line-height: 1.2;
+        letter-spacing: -1px;
+        color: var(--gold);
+        text-align: center;
+        text-shadow: 0 0 50px var(--gold-18);
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      #handle {
+        position: absolute;
+        left: 96px;
+        right: 96px;
+        top: 1070px;
+        font-family: var(--font-latin);
+        font-weight: 800;
+        font-size: 26px;
+        letter-spacing: 3px;
+        color: var(--bone-70);
+        text-align: center;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      #sutraLine {
+        position: absolute;
+        left: 50%;
+        top: 1130px;
+        height: 3px;
+        width: 0;
+        margin-left: 0;
+        background: var(--gold);
+        box-shadow: 0 0 24px var(--gold-35);
+        opacity: 0;
+      }
+
+      #boot {
+        position: absolute;
+        inset: 0;
+        background: var(--ink);
+        opacity: 0;
+        z-index: 30;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="camera" id="camera">
+        <div id="glow"></div>
+        <div id="room"></div>
+        <div id="mark"></div>
+
+        <section class="scene" id="s1">
+          <div id="kicker">रामायण · वह रात</div>
+          <div class="headline" id="headline1">उस रात</div>
+        </section>
+
+        <section class="scene" id="s2">
+          <div class="headline gold" id="headline2">जब सब बदल गया</div>
+        </section>
+
+        <section class="scene" id="s3">
+          <div id="sub">अग्नि परीक्षा के बाद भी, वनवास</div>
+        </section>
+
+        <section class="scene" id="s4">
+          <div id="crimson">सत्य</div>
+          <div id="crimsonRule"></div>
+        </section>
+
+        <section class="scene" id="s5">
+          <div id="cta">फॉलो करें</div>
+          <div id="handle">@rahasyasutrastudio</div>
+          <div id="sutraLine"></div>
+        </section>
+      </div>
+
+      <div class="dust" id="dust"></div>
+      <div class="grain" id="grain"></div>
+      <div class="vignette"></div>
+      <div id="boot"></div>
+      <div class="progress"><span id="barFill"></span></div>
+    </div>
+
+    <script src="../../brand/kit.js"></script>
+    <script src="art.js"></script>
+    <script>
+      const B = window.Brand;
+      const DURATION = 52;
+      window.TIMING = {
+        duration: DURATION,
+        fps: 30,
+        scenes: [],
+        cta: { start: 39, duration: 13 },
+      };
+
+      const camera = document.getElementById("camera");
+      const mark = document.getElementById("mark");
+      const room = document.getElementById("room");
+      const glow = document.getElementById("glow");
+      const kicker = document.getElementById("kicker");
+      const headline1 = document.getElementById("headline1");
+      const headline2 = document.getElementById("headline2");
+      const sub = document.getElementById("sub");
+      const crimson = document.getElementById("crimson");
+      const crimsonRule = document.getElementById("crimsonRule");
+      const cta = document.getElementById("cta");
+      const handle = document.getElementById("handle");
+      const sutraLine = document.getElementById("sutraLine");
+      const grain = document.getElementById("grain");
+      const boot = document.getElementById("boot");
+      const barFill = document.getElementById("barFill");
+      const updateDust = B.dust(document.getElementById("dust"), 20, 7);
+
+      /* scenes: fixed windows from timing.js */
+      const scenes = [
+        { id: "hook", el: document.getElementById("s1"), start: 0, duration: 8 },
+        { id: "truth", el: document.getElementById("s2"), start: 8, duration: 11 },
+        { id: "exile", el: document.getElementById("s3"), start: 19, duration: 17 },
+        { id: "satya", el: document.getElementById("s4"), start: 36, duration: 3 },
+        { id: "cta", el: document.getElementById("s5"), start: 39, duration: 13 },
+      ];
+      const last = scenes[scenes.length - 1];
+
+      /* one impulse per cut / reveal — two to three max, never continuous */
+      const HITS = [
+        { at: 8, amp: 12, decay: 0.11, rot: 0.3, seed: 2 },
+        { at: 36, amp: 14, decay: 0.1, rot: 0.4, seed: 5 },
+      ];
+
+      /* vector art per scene */
+      const arts = scenes.map((s, i) => Art.field(s.el, i));
+      scenes.forEach((scene, i) => {
+        scene.art = arts[i];
+      });
+
+      function seek(time) {
+        const t = B.clamp(time, 0, DURATION);
+
+        /* camera: impulse on cuts, scale 1.03 so edges never show */
+        const s = B.shake(t, HITS);
+        camera.style.transform = `translate3d(${s.x.toFixed(2)}px, ${s.y.toFixed(2)}px, 0) rotate(${s.rot.toFixed(3)}deg) scale(1.03)`;
+
+        /* background field: slow parallax zoom 1.06 -> 1.20, drifts up */
+        const fieldZoom = B.lerp(1.06, 1.20, B.easeInOutCubic(B.clamp(t / DURATION)));
+        glow.style.transform = `scale(${fieldZoom.toFixed(3)}) translate(0, ${(-40 * B.clamp(t / DURATION)).toFixed(1)}px)`;
+        glow.style.opacity = String(0.5 + 0.3 * Math.sin(t * 0.3));
+
+        /* chakra: spins 4°/s, continuous, never resets */
+        const spin = t * 120;
+        const growChakra = B.lerp(0.85, 1, B.easeOutExpo(B.clamp(t / 1.4)));
+        mark.style.transform = `rotate(${spin.toFixed(2)}deg) scale(${growChakra.toFixed(4)})`;
+        mark.style.opacity = String(B.clamp(0.3 + 0.55 * B.easeOutExpo(B.clamp((t - 0.1) / 1.2))));
+
+        /* mandala: the room, rotates 3.5°/s, continuous */
+        room.style.transform = `rotate(${(t * 3.5).toFixed(2)}deg)`;
+        room.style.opacity = String(B.lerp(0.08, 0.18, B.easeOutCubic(B.clamp(t / 1.6))));
+
+        scenes.forEach((scene, i) => {
+          const local = t - scene.start;
+          const p = B.clamp(local / scene.duration);
+          /* crossfade into a live frame, never dip through black */
+          const fadeIn = B.clamp((local + 0.42) / 0.42);
+          const fadeOut = scene === last ? 1 : B.clamp((scene.duration - local) / 0.38);
+          scene.el.style.opacity = String(B.clamp(Math.min(fadeIn, fadeOut)));
+
+          if (local > -0.45 && local <= scene.duration + 0.1) {
+            scene.art.update(Math.max(0, local + 0.3), p);
+          }
+        });
+
+        /* ---------- scene entrances ---------- */
+        /* s1: kicker 0.3, headline1 1.4 (rises, holds ≥ 1.2 s) */
+        B.enter(kicker, t, 0.3, { rise: 26, dur: 0.5 });
+        B.enter(headline1, t, 1.4, { rise: 40, dur: 0.55 });
+
+        /* s2: headline2 enters at 9.4 (its own frame, never with headline1) */
+        B.enter(headline2, t, 9.4, { rise: 40, dur: 0.55 });
+
+        /* s3: subtitle band at 20.4 */
+        B.enter(sub, t, 20.4, { rise: 36, dur: 0.5 });
+
+        /* s4: crimson reveal word at 36.4, hairline grows under it */
+        B.enter(crimson, t, 36.4, { rise: 30, dur: 0.45 });
+        B.grow(crimsonRule, t, 37.0, { width: 260, dur: 0.7 });
+
+        /* s5: CTA card — its own card, its own time */
+        B.enter(cta, t, 39.6, { rise: 30, dur: 0.5 });
+        B.enter(handle, t, 40.6, { rise: 18, dur: 0.5 });
+        B.grow(sutraLine, t, 41.6, { width: 220, dur: 0.8 });
+
+        /* one gold sweep on the CTA word, drifts once, never loops */
+        cta.style.backgroundPosition = `${(10 + 40 * B.clamp((t - 39.6) / 1.2)).toFixed(1)}% 50%`;
+
+        updateDust(t);
+        const step = Math.round(t * 30);
+        grain.style.transform = `translate(${-(step * 17) % 120}px, ${-(step * 31) % 120}px)`;
+
+        barFill.style.width = `${((t / DURATION) * 100).toFixed(2)}%`;
+
+        /* close on ink */
+        boot.style.opacity = String(B.clamp((t - 50.6) / 0.4));
+      }
+
+      window.seek = seek;
+      window.READY = document.fonts.ready.then(() => {
+        seek(0);
+        return true;
+      });
+      seek(0);
+    </script>
+  </body>
+</html>

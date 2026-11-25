@@ -1,0 +1,10 @@
+{
+  "title": "रामायण · वह रात — Rahasya Sutra Studio",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "audio": "audio/narration.wav",
+  "out": "out/seeta-ram.mp4",
+  "crf": 20,
+  "maxrate": "8M"
+}
